@@ -13,7 +13,7 @@
 | CocoaPods                  | 1.16.2 tested                                                                     |
 | JDK / Gradle / Kotlin      | Temurin 21 / Gradle 9.3.1 / Kotlin 2.1.20 in generated Expo app                   |
 | Node.js for development    | 22.13+; 26.0.0 tested locally                                                     |
-| Package manager            | pnpm 11.12.0                                                                      |
+| Package manager            | pnpm 11.15.1                                                                      |
 | Readium Swift              | 3.10.0 base at exact upstream revision `e43a052ded9fab70d7f0e8f6f19bd7e9edeac94f` |
 | Readium Kotlin             | Exact Maven release 3.1.2                                                         |
 

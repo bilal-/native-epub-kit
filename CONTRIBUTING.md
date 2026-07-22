@@ -20,7 +20,7 @@ reproducible evidence.
 Required baseline:
 
 - Node.js 22.13 or newer.
-- pnpm 11.12.0 through the repository's package-manager pin.
+- pnpm 11.15.1 through the repository's package-manager pin.
 - Xcode 26.4+ and CocoaPods 1.16+ for iOS work.
 - JDK 21 and Android SDK 36 for Android work.
 
