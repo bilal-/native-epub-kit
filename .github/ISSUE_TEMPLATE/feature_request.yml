@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a focused capability for the headless SDK.
+title: '[Feature]: '
+labels: ['enhancement', 'needs-triage']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Reader problem
+      description: Explain the user or integrator problem without prescribing an API.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed capability
+      description: Describe expected behavior and platform considerations.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+  - type: checkboxes
+    id: fit
+    attributes:
+      label: Project fit
+      options:
+        - label: This belongs in a headless EPUB SDK rather than branded application UI.
+          required: true
+        - label: I considered both iOS and Android behavior.
+          required: true

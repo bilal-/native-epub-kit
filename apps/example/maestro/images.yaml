@@ -1,0 +1,93 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: 'Close'
+    optional: true
+# The qualification AVD is a landscape-native tablet; Maestro's LANDSCAPE_LEFT
+# rotation places the rendered app in the tall orientation used by this flow.
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-images'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-images'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*publication Image Interaction Fixture.*images on.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# Activating the rendered EPUB image returns stable metadata, source identity,
+# rights, geometry where available, and an opaque generation-scoped handle.
+- tapOn: 'An abstract open book on a navy background with a gold bookmark.'
+- extendedWaitUntil:
+    visible:
+      id: 'image-sheet'
+    timeout: 30000
+- assertVisible: '.*Generated vector art for zoom, long-press, and sharing tests.*'
+- assertVisible: '.*Zoom allowed.*share snapshot denied.*live sharing disabled.*'
+
+# Sharing fails closed. Zoom materializes a bounded local file and explicit
+# release removes the app-owned lease before the reader generation ends.
+- tapOn:
+    id: 'resolve-image-share'
+- extendedWaitUntil:
+    visible: '.*share rejected.*SOURCE_PERMISSION_DENIED.*'
+    timeout: 10000
+- tapOn:
+    id: 'resolve-image-zoom'
+- extendedWaitUntil:
+    visible: '.*zoom resolved.*image/svg\+xml.*640 bytes.*local file yes.*'
+    timeout: 10000
+- tapOn:
+    id: 'release-image-source'
+- extendedWaitUntil:
+    visible: '.*released.*'
+    timeout: 10000
+
+# A consumer can opt into sharing without changing the immutable activation
+# snapshot; the live resolver enforces the current policy at command time.
+- tapOn:
+    id: 'toggle-image-sharing'
+- assertVisible: '.*live sharing enabled.*'
+- tapOn:
+    id: 'resolve-image-share'
+- extendedWaitUntil:
+    visible: '.*share resolved.*image/svg\+xml.*640 bytes.*local file yes.*'
+    timeout: 10000
+- tapOn:
+    id: 'release-image-source'
+- extendedWaitUntil:
+    visible: '.*released.*'
+    timeout: 10000
+- takeScreenshot: image-activation-policy-resolution
+
+# The pinned Kotlin toolkit cannot expose fixed-layout taps through its public
+# input API. The adapter reports that platform gap instead of overpromising.
+- tapOn:
+    id: 'close-image-sheet'
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'fixture-fixed'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*publication Fixed Layout Fixture.*layout fixed.*images off.*warnings .*android-fixed-layout-image-activation-unsupported.*'
+    timeout: 30000
+- takeScreenshot: image-fixed-layout-capability-android

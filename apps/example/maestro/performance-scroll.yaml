@@ -1,0 +1,24 @@
+appId: com.bilal.nativeepubkit.example
+---
+- assertVisible: 'PERFORMANCE_CORE_READY'
+- tapOn:
+    id: 'arm-scroll-performance'
+- extendedWaitUntil:
+    visible: 'PERFORMANCE_SCROLL_ARMED'
+    timeout: 10000
+- repeat:
+    times: 12
+    commands:
+      - swipe:
+          start: 50%, 85%
+          end: 50%, 35%
+          duration: 450
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: 'finish-scroll-performance'
+- extendedWaitUntil:
+    visible: 'PERFORMANCE_PASS'
+    timeout: 30000
+- assertNotVisible: 'PERFORMANCE_FAIL'
+- takeScreenshot: performance-pass

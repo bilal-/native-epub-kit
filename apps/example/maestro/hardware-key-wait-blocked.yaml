@@ -1,0 +1,16 @@
+appId: com.bilal.nativeepubkit.example
+---
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    text: '__native_key_injection_window__'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*gesture anchor armed.*part-1.xhtml.*'
+    timeout: 10000
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- takeScreenshot: hardware-key-blocked

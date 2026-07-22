@@ -1,0 +1,92 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# Defaults are normalized before crossing the bridge. Publisher styles make
+# advanced line-height/alignment unavailable, and spread is fixed-layout only.
+- extendedWaitUntil:
+    visible: '.*preferences reflowable.*applied 6/9.*disabled spread:reflowable-layout,lineHeight:publisher-styles,textAlignment:publisher-styles.*theme light.*font 1.00.*scrolled.*publisher on.*controls font enabled spread disabled.*'
+    timeout: 30000
+- tapOn:
+    id: 'toggle-preferences'
+- assertVisible:
+    id: 'preferences-panel'
+- assertVisible: '.*reflowable.*6 applied.*3 unavailable.*'
+
+# A complete user-style profile updates atomically without changing the current
+# locator. Reflowable policy applies eight fields and explicitly rejects spread.
+- tapOn:
+    id: 'preferences-profile'
+- extendedWaitUntil:
+    visible: '.*preferences reflowable.*applied 8/9.*disabled spread:reflowable-layout.*theme dark.*font 1.40.*paginated.*publisher off.*controls font enabled spread disabled.*anchor preserved yes.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*paginated.*chapter swipe disabled.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*preference-change.*'
+    timeout: 30000
+- tapOn:
+    id: 'preferences-probe'
+- extendedWaitUntil:
+    visible: '.*command coherent yes.*'
+    timeout: 10000
+- takeScreenshot: preferences-reflowable-profile
+
+# A second live update proves the capability-enabled font control remains live.
+- tapOn:
+    id: 'preferences-font-size'
+- extendedWaitUntil:
+    visible: '.*preferences reflowable.*applied 8/9.*font 1.60.*paginated.*anchor preserved yes.*'
+    timeout: 30000
+- tapOn:
+    id: 'preferences-reset'
+- extendedWaitUntil:
+    visible: '.*preferences reflowable.*applied 6/9.*theme light.*font 1.00.*scrolled.*publisher on.*anchor preserved yes.*'
+    timeout: 30000
+- tapOn:
+    id: 'preferences-probe'
+- extendedWaitUntil:
+    visible: '.*command coherent yes.*'
+    timeout: 10000
+- tapOn:
+    id: 'close-preferences'
+
+# Fixed-layout capability resolution disables all reflow controls but keeps
+# progression/spread active. The UI mirrors the native policy instead of hiding it.
+- tapOn:
+    id: 'fixture-fixed'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*preferences fixed.*applied 2/9.*disabled theme:fixed-layout,fontSize:fixed-layout,layout:fixed-layout,pageMargins:fixed-layout,lineHeight:fixed-layout,textAlignment:fixed-layout,publisherStyles:fixed-layout.*controls font disabled spread enabled.*'
+    timeout: 30000
+- tapOn:
+    id: 'toggle-preferences'
+- assertVisible: '.*fixed.*2 applied.*7 unavailable.*'
+- tapOn:
+    id: 'preferences-spread'
+- extendedWaitUntil:
+    visible: '.*preferences fixed.*applied 2/9.*controls font disabled spread enabled.*anchor preserved yes.*'
+    timeout: 30000
+- tapOn:
+    id: 'preferences-probe'
+- extendedWaitUntil:
+    visible: '.*command coherent yes.*'
+    timeout: 10000
+- takeScreenshot: preferences-fixed-capabilities

@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "schemaVersion": 1,
+  "sdk": { "name": "native-epub-kit", "version": "0.1.0" },
+  "limits": { "maximumWarnings": 64 },
+  "featureNames": [
+    "local-file-source",
+    "content-uri-source",
+    "remote-source",
+    "publication-data",
+    "positions",
+    "navigation",
+    "restore",
+    "preferences",
+    "progress",
+    "selection",
+    "footnotes",
+    "custom-fonts",
+    "decorations",
+    "images",
+    "search",
+    "diagnostics"
+  ],
+  "redaction": {
+    "profile": "support-v1",
+    "forbiddenKeys": [
+      "source",
+      "sourceUri",
+      "publicationUri",
+      "headers",
+      "authorization",
+      "locator",
+      "title",
+      "authors",
+      "identifier",
+      "selectedText",
+      "contentHtml",
+      "nativeDetails",
+      "stack"
+    ],
+    "forbiddenFragments": [
+      "file://",
+      "content://",
+      "http://",
+      "https://",
+      "/Users/",
+      "Authorization",
+      "Bearer "
+    ]
+  },
+  "cases": [
+    {
+      "name": "ios-reflowable-valid-fonts",
+      "platform": "ios",
+      "toolkit": {
+        "name": "readium-swift",
+        "version": "3.10.0-fontfix.845",
+        "revision": "e43a052ded9fab70d7f0e8f6f19bd7e9edeac94f"
+      },
+      "publication": {
+        "layout": "reflowable",
+        "readingProgression": "ltr",
+        "positionCount": 18,
+        "progressPrecision": "continuous",
+        "mappingDurationMilliseconds": 21,
+        "capabilities": {
+          "customFonts": true,
+          "decorations": true,
+          "footnotes": true,
+          "images": true,
+          "positions": true,
+          "search": true,
+          "selection": true
+        },
+        "warnings": ["toc-incomplete"]
+      },
+      "fonts": { "status": "valid", "faceCount": 2, "familyCount": 1 },
+      "preferences": { "publisherStyles": false },
+      "expected": {
+        "enabled": [
+          "local-file-source",
+          "publication-data",
+          "positions",
+          "navigation",
+          "restore",
+          "preferences",
+          "progress",
+          "selection",
+          "footnotes",
+          "custom-fonts",
+          "decorations",
+          "images",
+          "search",
+          "diagnostics"
+        ],
+        "stages": {
+          "local-file-source": "stable",
+          "content-uri-source": "unsupported",
+          "remote-source": "unsupported",
+          "publication-data": "stable",
+          "positions": "stable",
+          "navigation": "stable",
+          "restore": "stable",
+          "preferences": "stable",
+          "progress": "stable",
+          "selection": "stable",
+          "footnotes": "stable",
+          "custom-fonts": "qualification",
+          "decorations": "stable",
+          "images": "stable",
+          "search": "stable",
+          "diagnostics": "stable"
+        },
+        "warnings": ["remote-sources-disabled", "spread-fixed-layout-only", "toc-incomplete"]
+      }
+    },
+    {
+      "name": "android-fixed-no-font-manifest",
+      "platform": "android",
+      "toolkit": {
+        "name": "readium-kotlin",
+        "version": "3.1.2",
+        "revision": "71074ea0c424eabbc39a93b48a4cefe366f7741b"
+      },
+      "publication": {
+        "layout": "fixed",
+        "readingProgression": "rtl",
+        "positionCount": 0,
+        "progressPrecision": "resource",
+        "mappingDurationMilliseconds": 8,
+        "capabilities": {
+          "customFonts": false,
+          "decorations": true,
+          "footnotes": true,
+          "images": false,
+          "positions": false,
+          "search": true,
+          "selection": true
+        },
+        "warnings": [
+          "positions-unavailable",
+          "fixed-layout-preferences-limited",
+          "android-fixed-layout-image-activation-unsupported"
+        ]
+      },
+      "fonts": { "status": "not-configured", "faceCount": 0, "familyCount": 0 },
+      "preferences": { "spread": "always", "readingProgression": "rtl" },
+      "expected": {
+        "enabled": [
+          "local-file-source",
+          "content-uri-source",
+          "publication-data",
+          "navigation",
+          "restore",
+          "preferences",
+          "progress",
+          "selection",
+          "footnotes",
+          "decorations",
+          "search",
+          "diagnostics"
+        ],
+        "stages": {
+          "local-file-source": "stable",
+          "content-uri-source": "stable",
+          "remote-source": "unsupported",
+          "publication-data": "stable",
+          "positions": "stable",
+          "navigation": "stable",
+          "restore": "stable",
+          "preferences": "stable",
+          "progress": "stable",
+          "selection": "stable",
+          "footnotes": "stable",
+          "custom-fonts": "qualification",
+          "decorations": "stable",
+          "images": "stable",
+          "search": "stable",
+          "diagnostics": "stable"
+        },
+        "warnings": [
+          "android-fixed-layout-image-activation-unsupported",
+          "fixed-layout-preferences-limited",
+          "fixed-layout-reflow-preferences-disabled",
+          "positions-unavailable",
+          "remote-sources-disabled"
+        ]
+      }
+    },
+    {
+      "name": "android-reflowable-invalid-font-manifest",
+      "platform": "android",
+      "toolkit": {
+        "name": "readium-kotlin",
+        "version": "3.1.2",
+        "revision": "71074ea0c424eabbc39a93b48a4cefe366f7741b"
+      },
+      "publication": {
+        "layout": "reflowable",
+        "readingProgression": "auto",
+        "positionCount": 2,
+        "progressPrecision": "position",
+        "mappingDurationMilliseconds": 13,
+        "capabilities": {
+          "customFonts": true,
+          "decorations": true,
+          "footnotes": true,
+          "images": true,
+          "positions": true,
+          "search": true,
+          "selection": true
+        },
+        "warnings": []
+      },
+      "fonts": { "status": "invalid", "faceCount": 0, "familyCount": 0 },
+      "preferences": {},
+      "expected": {
+        "enabled": [
+          "local-file-source",
+          "content-uri-source",
+          "publication-data",
+          "positions",
+          "navigation",
+          "restore",
+          "preferences",
+          "progress",
+          "selection",
+          "footnotes",
+          "decorations",
+          "images",
+          "search",
+          "diagnostics"
+        ],
+        "stages": {
+          "local-file-source": "stable",
+          "content-uri-source": "stable",
+          "remote-source": "unsupported",
+          "publication-data": "stable",
+          "positions": "stable",
+          "navigation": "stable",
+          "restore": "stable",
+          "preferences": "stable",
+          "progress": "stable",
+          "selection": "stable",
+          "footnotes": "stable",
+          "custom-fonts": "qualification",
+          "decorations": "stable",
+          "images": "stable",
+          "search": "stable",
+          "diagnostics": "stable"
+        },
+        "warnings": [
+          "font-manifest-invalid",
+          "publisher-styles-disable-advanced-text",
+          "remote-sources-disabled",
+          "spread-fixed-layout-only"
+        ]
+      }
+    }
+  ]
+}

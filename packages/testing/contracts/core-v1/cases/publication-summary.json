@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "caseId": "publication-summary",
+  "recordType": "publicationSummary",
+  "payload": {
+    "identifier": "fixture:rtl-custom-font",
+    "title": "RTL custom font",
+    "subtitle": "Core v1 contract",
+    "authors": [{ "name": "Fixture Author", "sortAs": "Author, Fixture", "roles": ["aut"] }],
+    "languages": ["ur", "ar", "en"],
+    "readingProgression": "rtl",
+    "tableOfContents": [
+      {
+        "title": "اردو مطالعہ",
+        "href": "text/urdu-reading.xhtml",
+        "type": "application/xhtml+xml",
+        "children": [
+          {
+            "title": "حصہ اوّل",
+            "href": "text/urdu-reading.xhtml#part-1",
+            "children": []
+          }
+        ]
+      }
+    ],
+    "readingOrder": [
+      {
+        "href": "text/urdu-reading.xhtml",
+        "type": "application/xhtml+xml",
+        "rel": ["contents"],
+        "properties": { "contains": ["mathml"] },
+        "children": []
+      }
+    ],
+    "positions": [
+      {
+        "href": "text/urdu-reading.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "progression": 0, "totalProgression": 0, "position": 1 }
+      }
+    ],
+    "layout": "reflowable",
+    "capabilities": {
+      "customFonts": true,
+      "decorations": true,
+      "footnotes": true,
+      "images": true,
+      "progressPrecision": "continuous",
+      "search": true,
+      "selection": true,
+      "warnings": [],
+      "viewportRange": true
+    }
+  }
+}

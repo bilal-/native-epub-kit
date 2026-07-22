@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-image-activation-event",
+  "recordType": "readerImageActivationEvent",
+  "payload": {
+    "instanceId": "reader-image-v1",
+    "generation": 5,
+    "sequence": 12,
+    "platform": "android",
+    "locator": {
+      "href": "text/gallery.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "cssSelector": "#primary-image img", "progression": 0.4 }
+    },
+    "source": {
+      "kind": "publication-resource",
+      "href": "images/reading-illustration.svg",
+      "contentType": "image/svg+xml",
+      "resolvable": true,
+      "handle": "image-source-v1-opaque"
+    },
+    "alt": "An abstract open book on a navy background with a gold bookmark.",
+    "caption": "Generated vector art for zoom, long-press, and sharing tests.",
+    "rights": { "canShare": false, "canZoom": true },
+    "geometry": {
+      "coordinateSpace": "reader-view-and-window-v1",
+      "viewport": { "width": 800, "height": 1180 },
+      "viewRect": { "x": 80, "y": 220, "width": 640, "height": 360 },
+      "visibleViewRect": { "x": 80, "y": 220, "width": 640, "height": 360 },
+      "windowRect": { "x": 80, "y": 284, "width": 640, "height": 360 },
+      "visibleWindowRect": { "x": 80, "y": 284, "width": 640, "height": 360 }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "states": [
+    "initialized",
+    "resolving",
+    "retrieving",
+    "opening",
+    "ready",
+    "failed",
+    "closing",
+    "closed"
+  ],
+  "cases": [
+    {
+      "name": "successful session closes exactly once",
+      "steps": [
+        { "state": "resolving", "accepted": true },
+        { "state": "retrieving", "accepted": true },
+        { "state": "opening", "accepted": true },
+        { "state": "ready", "accepted": true },
+        { "state": "ready", "accepted": false },
+        { "state": "closing", "accepted": true },
+        { "state": "closed", "accepted": true },
+        { "state": "closed", "accepted": false }
+      ]
+    },
+    {
+      "name": "source failure still requires cleanup",
+      "steps": [
+        { "state": "resolving", "accepted": true },
+        { "state": "failed", "accepted": true },
+        { "state": "ready", "accepted": false },
+        { "state": "closing", "accepted": true },
+        { "state": "closed", "accepted": true }
+      ]
+    },
+    {
+      "name": "retrieval cancellation closes without failure",
+      "steps": [
+        { "state": "resolving", "accepted": true },
+        { "state": "retrieving", "accepted": true },
+        { "state": "closing", "accepted": true },
+        { "state": "closed", "accepted": true },
+        { "state": "failed", "accepted": false }
+      ]
+    },
+    {
+      "name": "open failure cannot become ready",
+      "steps": [
+        { "state": "resolving", "accepted": true },
+        { "state": "retrieving", "accepted": true },
+        { "state": "opening", "accepted": true },
+        { "state": "failed", "accepted": true },
+        { "state": "ready", "accepted": false },
+        { "state": "closing", "accepted": true },
+        { "state": "closed", "accepted": true }
+      ]
+    },
+    {
+      "name": "unused initialized session can close",
+      "steps": [
+        { "state": "closing", "accepted": true },
+        { "state": "closed", "accepted": true },
+        { "state": "resolving", "accepted": false }
+      ]
+    }
+  ]
+}

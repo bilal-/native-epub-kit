@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "locationThrottleMilliseconds": 120,
+  "commandCases": [
+    { "state": "ready", "destroyed": false, "errorCode": null },
+    { "state": "idle", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "opening", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "waitingForHost", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "error", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "closing", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "unmounted", "destroyed": false, "errorCode": "READER_NOT_READY" },
+    { "state": "ready", "destroyed": true, "errorCode": "READER_DESTROYED" }
+  ],
+  "eventCases": [
+    {
+      "name": "ready-before-initial-location-and-scroll-throttle",
+      "steps": [
+        { "kind": "event", "generation": 1, "accepted": true, "sequence": 0 },
+        { "kind": "event", "generation": 1, "accepted": true, "sequence": 1 },
+        {
+          "kind": "location",
+          "generation": 1,
+          "reason": "initial",
+          "timestampMilliseconds": 1000,
+          "accepted": true,
+          "sequence": 2
+        },
+        {
+          "kind": "location",
+          "generation": 1,
+          "reason": "user-scroll",
+          "timestampMilliseconds": 1050,
+          "accepted": false,
+          "sequence": null
+        },
+        {
+          "kind": "location",
+          "generation": 1,
+          "reason": "user-scroll",
+          "timestampMilliseconds": 1120,
+          "accepted": true,
+          "sequence": 3
+        }
+      ]
+    },
+    {
+      "name": "new-generation-resets-and-stale-generation-is-suppressed",
+      "steps": [
+        { "kind": "event", "generation": 4, "accepted": true, "sequence": 0 },
+        { "kind": "event", "generation": 5, "accepted": true, "sequence": 0 },
+        { "kind": "event", "generation": 4, "accepted": false, "sequence": null },
+        {
+          "kind": "location",
+          "generation": 5,
+          "reason": "initial",
+          "timestampMilliseconds": 2000,
+          "accepted": true,
+          "sequence": 1
+        }
+      ]
+    },
+    {
+      "name": "programmatic-location-bypasses-user-scroll-window",
+      "steps": [
+        {
+          "kind": "location",
+          "generation": 8,
+          "reason": "initial",
+          "timestampMilliseconds": 3000,
+          "accepted": true,
+          "sequence": 0
+        },
+        {
+          "kind": "location",
+          "generation": 8,
+          "reason": "user-scroll",
+          "timestampMilliseconds": 3020,
+          "accepted": false,
+          "sequence": null
+        },
+        {
+          "kind": "location",
+          "generation": 8,
+          "reason": "programmatic",
+          "timestampMilliseconds": 3030,
+          "accepted": true,
+          "sequence": 1
+        },
+        {
+          "kind": "location",
+          "generation": 8,
+          "reason": "user-scroll",
+          "timestampMilliseconds": 3149,
+          "accepted": false,
+          "sequence": null
+        },
+        {
+          "kind": "location",
+          "generation": 8,
+          "reason": "user-scroll",
+          "timestampMilliseconds": 3150,
+          "accepted": true,
+          "sequence": 2
+        }
+      ]
+    }
+  ]
+}

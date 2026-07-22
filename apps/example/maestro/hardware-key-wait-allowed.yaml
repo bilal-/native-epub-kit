@@ -1,0 +1,13 @@
+appId: com.bilal.nativeepubkit.example
+---
+- tapOn:
+    id: 'reader-unfocus'
+- extendedWaitUntil:
+    visible: '.*user-page-turn.*part-2.xhtml.*'
+    timeout: 20000
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved yes.*resource same no.*'
+    timeout: 15000
+- takeScreenshot: hardware-key-allowed

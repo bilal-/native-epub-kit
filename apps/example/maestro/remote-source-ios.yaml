@@ -1,0 +1,30 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-remote'
+- extendedWaitUntil:
+    visible: '.*ios.*error.*UNSUPPORTED_FORMAT.*source.*owned 0.*emissions 1.*'
+    timeout: 10000
+- extendedWaitUntil:
+    visible: '.*ios.*session active 0.*assets 0.*publications 0.*violations 0.*'
+    timeout: 10000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ios.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- takeScreenshot: ios-remote-source-recovery

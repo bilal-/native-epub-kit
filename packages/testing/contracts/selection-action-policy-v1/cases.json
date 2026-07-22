@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "maximumActions": 8,
+  "maximumActionIdUtf16Units": 64,
+  "maximumActionTitleUtf16Units": 64,
+  "maximumSelectionTextUtf16Units": 8192,
+  "maximumSelectionContextUtf16Units": 512,
+  "actionCases": [
+    {
+      "name": "default-empty",
+      "actions": null,
+      "expected": []
+    },
+    {
+      "name": "three-product-actions",
+      "actions": [
+        { "id": "highlight", "title": " Highlight " },
+        { "id": "note", "title": "Note" },
+        { "id": "share", "title": "Share Quote" }
+      ],
+      "expected": [
+        { "id": "highlight", "title": "Highlight" },
+        { "id": "note", "title": "Note" },
+        { "id": "share", "title": "Share Quote" }
+      ]
+    },
+    {
+      "name": "localized-and-custom-actions",
+      "actions": [
+        { "id": "copy-reference", "title": "حوالہ نقل کریں" },
+        { "id": "define.word", "title": "Define" }
+      ],
+      "expected": [
+        { "id": "copy-reference", "title": "حوالہ نقل کریں" },
+        { "id": "define.word", "title": "Define" }
+      ]
+    },
+    {
+      "name": "duplicate-id-rejected",
+      "actions": [
+        { "id": "note", "title": "Note" },
+        { "id": "note", "title": "Another Note" }
+      ],
+      "expectedError": true
+    },
+    {
+      "name": "unsafe-id-rejected",
+      "actions": [{ "id": "share quote", "title": "Share" }],
+      "expectedError": true
+    },
+    {
+      "name": "control-title-rejected",
+      "actions": [{ "id": "share", "title": "Share\nQuote" }],
+      "expectedError": true
+    },
+    {
+      "name": "unknown-field-rejected",
+      "actions": [{ "id": "share", "title": "Share", "script": "alert(1)" }],
+      "expectedError": true
+    }
+  ],
+  "directionCases": [
+    { "name": "english", "text": "42 — Read this", "expected": "ltr" },
+    { "name": "urdu", "text": "42 — مطالعہ", "expected": "rtl" },
+    { "name": "hebrew", "text": "(12) שלום", "expected": "rtl" },
+    { "name": "emoji-before-arabic", "text": "✨ عبارت", "expected": "rtl" },
+    { "name": "neutral-only", "text": "123 — ✨", "expected": "auto" }
+  ]
+}

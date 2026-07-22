@@ -1,0 +1,17 @@
+appId: com.bilal.nativeepubkit.example
+---
+- extendedWaitUntil:
+    visible: '.*android.*highlight.*selection .+.*direction rtl.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- assertVisible: '.*android.*lifecycle started.*selection active.*handles retained.*'
+- assertVisible:
+    id: 'selection-marker'
+- takeScreenshot: selection-android-landscape
+- setOrientation: PORTRAIT
+- waitForAnimationToEnd
+- tapOn:
+    id: 'clear-selection'
+- assertNotVisible:
+    id: 'selection-marker'
+- assertVisible: 'Selection action pending'
+- assertVisible: '.*android.*lifecycle cleared.*selection none.*handles released.*'

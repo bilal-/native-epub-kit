@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bilal-/native-epub-kit/blob/main/packages/testing/contracts/qualification-v0/schema.json",
+  "title": "Native EPUB Kit qualification contract fixture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "caseId", "recordType", "payload", "expectations"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "caseId": { "type": "string", "minLength": 1 },
+    "recordType": { "type": "string", "minLength": 1 },
+    "payload": {},
+    "expectations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredJsonPointers", "explicitNullJsonPointers"],
+      "properties": {
+        "requiredJsonPointers": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^/" },
+          "uniqueItems": true
+        },
+        "explicitNullJsonPointers": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^/" },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

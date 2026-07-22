@@ -1,0 +1,76 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- assertVisible:
+    id: 'epub-reader'
+- tapOn:
+    id: 'switch-fixture'
+- extendedWaitUntil:
+    visible: 'TOC'
+    timeout: 10000
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- repeat:
+    times: 10
+    commands:
+      - tapOn:
+          id: 'toggle-reader'
+      - assertVisible:
+          id: 'reader-unmounted'
+      - tapOn:
+          id: 'toggle-reader'
+      - extendedWaitUntil:
+          visible: '.*ready.*owned 1.*emissions 1.*'
+          timeout: 20000
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- pressKey: HOME
+- launchApp:
+    stopApp: false
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- stopApp
+- launchApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    index: '0'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- takeScreenshot: lifecycle-complete

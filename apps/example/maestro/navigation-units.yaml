@@ -1,0 +1,68 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# The nested fixture has six TOC nodes over two reading-order resources.
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*toc top 2 total 6 depth 2.*reading 2.*chain valid.*'
+    timeout: 30000
+- tapOn:
+    id: 'units-top-level'
+- extendedWaitUntil:
+    visible: '.*units top-level.*coherent yes.*count 2.*toc 2/6.*aliases 0 linked yes.*fallbacks 0.*unresolved 0.*order 0.*issues 0/0.*ids unique.*intervals ordered.*first Part one.*last Part two.*'
+    timeout: 15000
+
+# Leaf policy chooses the two same-resource fragments and the deepest target.
+# Coarse native positions are diagnosed rather than silently merging labels.
+- tapOn:
+    id: 'units-leaf'
+- extendedWaitUntil:
+    visible: '.*units leaf.*coherent yes.*count 3.*toc 3/6.*aliases 0 linked yes.*fallbacks 0.*unresolved 0.*order 0.*issues 2/0.*ids unique.*intervals ordered.*first Opening.*last Deep target.*'
+    timeout: 15000
+- tapOn:
+    id: 'units-depth-1'
+- extendedWaitUntil:
+    visible: '.*units depth-1.*coherent yes.*count 3.*toc 3/6.*aliases 0 linked yes.*fallbacks 0.*unresolved 0.*order 0.*issues 2/0.*ids unique.*intervals ordered.*first Opening.*last Continuation.*'
+    timeout: 15000
+
+# The 297-position fixture forces getNavigationUnits() through two native pages.
+- tapOn:
+    id: 'fixture-stress'
+- extendedWaitUntil:
+    visible: '.*publication Annotation Stress Fixture.*positions 297.*page 256/256 offset 0 next 256.*chain valid.*'
+    timeout: 60000
+- tapOn:
+    id: 'units-top-level'
+- extendedWaitUntil:
+    visible: '.*units top-level.*coherent yes.*count 1.*toc 1/1.*aliases 0 linked yes.*fallbacks 0.*unresolved 0.*order 0.*ids unique.*intervals ordered.*end 298.*'
+    timeout: 30000
+
+# Return to the hierarchy for a stable visual artifact.
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*chain valid.*'
+    timeout: 30000
+- tapOn:
+    id: 'units-depth-1'
+- extendedWaitUntil:
+    visible: '.*units depth-1.*coherent yes.*count 3.*first Opening.*last Continuation.*'
+    timeout: 15000
+- assertNotVisible: '.*error (READER_NOT_READY|NATIVE_INVARIANT_VIOLATION|unknown).*'
+- takeScreenshot: navigation-unit-derivation

@@ -1,0 +1,17 @@
+.expo
+.git
+.build
+artifacts
+build
+coverage
+DerivedData
+node_modules
+packages/testing/.cache
+packages/testing/fixtures/generated
+packages/testing/fixtures/licenses
+apps/example/android
+apps/example/ios
+docs/architecture/product-plan.md
+LICENSE
+NOTICE
+pnpm-lock.yaml

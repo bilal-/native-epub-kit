@@ -1,0 +1,31 @@
+{
+  "name": "@native-epub-kit/testing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./build/helpers/index.js",
+  "types": "./build/helpers/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/helpers/index.d.ts",
+      "default": "./build/helpers/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "contracts:test:swift": "swift test --package-path native/swift",
+    "records:test:swift": "node scripts/test-swift-core-records.mjs",
+    "lifecycle:test:swift": "node scripts/test-swift-lifecycle.mjs",
+    "fixtures:build": "node scripts/build-fixtures.mjs",
+    "fixtures:verify": "node scripts/verify-fixtures.mjs",
+    "lint": "eslint contracts helpers scripts --max-warnings=0",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.1",
+    "fflate": "0.8.3",
+    "typescript": "~6.0.3",
+    "vitest": "4.1.10"
+  }
+}

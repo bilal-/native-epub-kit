@@ -1,0 +1,162 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: 'Close'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- assertVisible: 'MINIMAL'
+- extendedWaitUntil:
+    visible: '.*scrolled.*chapter swipe disabled.*precision ${EXPECTED_PRECISION}.*chapter-1.xhtml.*viewport ${EXPECTED_INITIAL_VIEWPORT}.*'
+    timeout: 30000
+
+# LTR: horizontal page-turn motion is disabled while scrolled.
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: '.*probe.*precision ${EXPECTED_PRECISION}.*chapter-1.xhtml.*viewport ${EXPECTED_PROBE_VIEWPORT}.*baseline same yes.*'
+    timeout: 10000
+
+# LTR: vertical reading advances within the current resource.
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '50%,78%'
+    end: '50%,48%'
+    duration: 700
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: '.*probe.*chapter-1.xhtml.*baseline same yes.*vertical advanced yes.*'
+    timeout: 15000
+- takeScreenshot: ltr-vertical-progress
+
+# LTR: an explicit next action still advances reading order.
+- tapOn:
+    id: 'next-resource'
+- extendedWaitUntil:
+    visible: '.*next-resource succeeded.*from EPUB/text/chapter-1.xhtml.*to EPUB/text/chapter-2.xhtml.*'
+    timeout: 15000
+- extendedWaitUntil:
+    visible: '.*programmatic.*precision ${EXPECTED_PRECISION}.*chapter-2.xhtml.*viewport ${EXPECTED_INITIAL_VIEWPORT}.*baseline same no.*'
+    timeout: 15000
+- assertVisible: 'Second chapter'
+- takeScreenshot: ltr-explicit-next
+
+# Load an RTL publication and repeat the same contract in its reading direction.
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*publication RTL and Custom Font Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- assertVisible: 'RTL'
+- extendedWaitUntil:
+    visible: '.*scrolled.*chapter swipe disabled.*precision ${EXPECTED_PRECISION}.*urdu-reading.xhtml.*viewport ${EXPECTED_INITIAL_VIEWPORT}.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '18%,72%'
+    end: '82%,72%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: '.*probe.*precision ${EXPECTED_PRECISION}.*urdu-reading.xhtml.*viewport ${EXPECTED_PROBE_VIEWPORT}.*baseline same yes.*'
+    timeout: 10000
+
+# RTL: ordinary vertical reading advances within the current resource.
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '50%,78%'
+    end: '50%,48%'
+    duration: 700
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: '.*probe.*urdu-reading.xhtml.*baseline same yes.*vertical advanced yes.*'
+    timeout: 15000
+- takeScreenshot: rtl-vertical-progress
+
+# RTL: an explicit next action follows publication reading order.
+- tapOn:
+    id: 'next-resource'
+- extendedWaitUntil:
+    visible: '.*next-resource succeeded.*from EPUB/text/urdu-reading.xhtml.*to EPUB/text/urdu-continuation.xhtml.*'
+    timeout: 15000
+- extendedWaitUntil:
+    visible: '.*programmatic.*precision ${EXPECTED_PRECISION}.*urdu-continuation.xhtml.*viewport ${EXPECTED_INITIAL_VIEWPORT}.*baseline same no.*'
+    timeout: 15000
+- assertVisible: 'اردو مطالعہ دوم'
+- takeScreenshot: rtl-explicit-next

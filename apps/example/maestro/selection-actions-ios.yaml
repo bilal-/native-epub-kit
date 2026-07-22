@@ -1,0 +1,112 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-rtl'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'typography-preserve'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'typography-hybrid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*hybrid.*loaded yes.*marker hybrid.*locator stable.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# The host receives the configured Note action while native selection remains active.
+- longPressOn:
+    point: '65%,36%'
+- extendedWaitUntil:
+    visible: 'Note'
+    timeout: 10000
+- assertVisible: 'Copy'
+- tapOn: 'Note'
+- extendedWaitUntil:
+    visible: '.*ios.*note.*selection .+.*direction rtl.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- assertVisible:
+    id: 'selection-marker'
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'
+
+# Sharing is a second independent custom action; the SDK emits data and does not
+# launch an OS share sheet on behalf of the host application.
+- longPressOn:
+    point: '65%,36%'
+- extendedWaitUntil:
+    visible: 'Share Quote'
+    timeout: 10000
+- tapOn: 'Share Quote'
+- extendedWaitUntil:
+    visible: '.*ios.*share.*selection .+.*direction rtl.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'
+
+# System Copy remains functional beside custom actions and dismisses selection
+# with the platform's standard behavior.
+- longPressOn:
+    point: '65%,36%'
+- extendedWaitUntil:
+    visible: 'Copy'
+    timeout: 10000
+- tapOn: 'Copy'
+- extendedWaitUntil:
+    visible: '.*ios.*lifecycle started.*selection active.*handles retained.*'
+    timeout: 10000
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'
+
+# Logical LTR text is preserved without inventing unavailable DOM language metadata.
+- longPressOn:
+    text: 'English profile sample with a stable locator and selectable range.'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn: 'Highlight'
+- extendedWaitUntil:
+    visible: '.*ios.*highlight.*selection [A-Za-z]+.*direction ltr.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'
+
+# Native dismissal is distinct from the explicit clear command.
+- longPressOn:
+    point: '65%,36%'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn:
+    point: '20%,80%'
+- extendedWaitUntil:
+    visible: '.*ios.*lifecycle dismissed.*selection none.*handles released.*'
+    timeout: 10000
+- assertVisible: 'Selection action pending'
+- takeScreenshot: selection-actions-ios

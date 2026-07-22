@@ -1,0 +1,24 @@
+.DS_Store
+.build/
+.expo/
+.turbo/
+artifacts/
+build/
+coverage/
+DerivedData/
+node_modules/
+*.tgz
+
+# Downloaded, checksum-verified fixture tooling and source assets.
+packages/testing/.cache/
+
+# Expo Continuous Native Generation outputs.
+apps/example/android/
+apps/example/ios/
+
+# Local environment and IDE state.
+.env
+.env.*.local
+.idea/
+.vscode/
+*.tsbuildinfo

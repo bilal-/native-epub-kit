@@ -1,0 +1,20 @@
+appId: com.bilal.nativeepubkit.example
+---
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-hardware-keys'
+- extendedWaitUntil:
+    visible: '.*chapter enabled.*keys off.*suppressed no.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn:
+    point: '50%,70%'

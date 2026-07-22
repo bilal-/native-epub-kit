@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "outDir": "./build",
+    "rewriteRelativeImportExtensions": true,
+    "rootDir": "./src",
+    "sourceMap": true
+  },
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/*.test.ts", "**/*.test.tsx"]
+}

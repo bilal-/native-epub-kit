@@ -1,0 +1,378 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "top-level duplicate fragment and incomplete toc",
+      "granularity": "top-level",
+      "input": {
+        "readingOrder": [
+          { "children": [], "href": "text/front.xhtml", "title": "Front matter" },
+          { "children": [], "href": "text/chapter-1.xhtml", "title": "Chapter one" },
+          { "children": [], "href": "text/chapter-2.xhtml", "title": "Chapter two" },
+          { "children": [], "href": "text/appendix.xhtml", "title": "Appendix" }
+        ],
+        "tableOfContents": [
+          { "children": [], "href": "text/front.xhtml", "title": "Front matter" },
+          {
+            "children": [
+              {
+                "children": [],
+                "href": "text/chapter-1.xhtml#start",
+                "title": "Chapter one"
+              },
+              {
+                "children": [],
+                "href": "text/chapter-2.xhtml#part-2",
+                "title": "Chapter two"
+              }
+            ],
+            "href": "text/chapter-1.xhtml#start",
+            "title": "Part one"
+          },
+          {
+            "children": [],
+            "href": "text/chapter-1.xhtml#start",
+            "title": "Alternate part label"
+          }
+        ],
+        "positions": [
+          {
+            "href": "text/front.xhtml",
+            "locations": { "position": 1, "totalProgression": 0 },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-1.xhtml",
+            "locations": {
+              "fragments": ["start"],
+              "position": 2,
+              "totalProgression": 0.25
+            },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-1.xhtml",
+            "locations": {
+              "fragments": ["middle"],
+              "position": 3,
+              "totalProgression": 0.4
+            },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-2.xhtml",
+            "locations": {
+              "fragments": ["part-2"],
+              "position": 4,
+              "totalProgression": 0.5
+            },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/appendix.xhtml",
+            "locations": { "position": 5, "totalProgression": 0.75 },
+            "type": "application/xhtml+xml"
+          }
+        ]
+      },
+      "expected": {
+        "unitHrefs": ["text/front.xhtml", "text/chapter-1.xhtml#start", "text/appendix.xhtml"],
+        "unitSources": ["toc", "toc", "reading-order-fallback"],
+        "unitTitles": ["Front matter", "Part one", "Appendix"],
+        "startPositions": [1, 2, 5],
+        "endPositionsExclusive": [2, 5, 6],
+        "aliasTitles": ["Alternate part label"],
+        "diagnosticCodes": ["toc-duplicate-boundary", "reading-order-fallback"],
+        "counts": {
+          "aliasCount": 1,
+          "duplicateBoundaryCount": 1,
+          "fallbackUnitCount": 1,
+          "outOfOrderTocEntryCount": 0,
+          "readingOrderResourceCount": 4,
+          "selectedTocEntryCount": 3,
+          "tocEntryCount": 5,
+          "unitCount": 3,
+          "unresolvedTocEntryCount": 0
+        }
+      }
+    },
+    {
+      "name": "leaf selection preserves nested chapters and aliases",
+      "granularity": "leaf",
+      "input": {
+        "readingOrder": [
+          { "children": [], "href": "text/front.xhtml", "title": "Front matter" },
+          { "children": [], "href": "text/chapter-1.xhtml", "title": "Chapter one" },
+          { "children": [], "href": "text/chapter-2.xhtml", "title": "Chapter two" },
+          { "children": [], "href": "text/appendix.xhtml", "title": "Appendix" }
+        ],
+        "tableOfContents": [
+          { "children": [], "href": "text/front.xhtml", "title": "Front matter" },
+          {
+            "children": [
+              {
+                "children": [],
+                "href": "text/chapter-1.xhtml#start",
+                "title": "Chapter one"
+              },
+              {
+                "children": [],
+                "href": "text/chapter-2.xhtml#part-2",
+                "title": "Chapter two"
+              }
+            ],
+            "href": "text/chapter-1.xhtml#start",
+            "title": "Part one"
+          },
+          {
+            "children": [],
+            "href": "text/chapter-1.xhtml#start",
+            "title": "Alternate part label"
+          }
+        ],
+        "positions": [
+          {
+            "href": "text/front.xhtml",
+            "locations": { "position": 1, "totalProgression": 0 },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-1.xhtml",
+            "locations": {
+              "fragments": ["start"],
+              "position": 2,
+              "totalProgression": 0.25
+            },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-1.xhtml",
+            "locations": { "position": 3, "totalProgression": 0.4 },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/chapter-2.xhtml",
+            "locations": {
+              "fragments": ["part-2"],
+              "position": 4,
+              "totalProgression": 0.5
+            },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/appendix.xhtml",
+            "locations": { "position": 5, "totalProgression": 0.75 },
+            "type": "application/xhtml+xml"
+          }
+        ]
+      },
+      "expected": {
+        "unitHrefs": [
+          "text/front.xhtml",
+          "text/chapter-1.xhtml#start",
+          "text/chapter-2.xhtml#part-2",
+          "text/appendix.xhtml"
+        ],
+        "unitSources": ["toc", "toc", "toc", "reading-order-fallback"],
+        "unitTitles": ["Front matter", "Chapter one", "Chapter two", "Appendix"],
+        "startPositions": [1, 2, 4, 5],
+        "endPositionsExclusive": [2, 4, 5, 6],
+        "aliasTitles": ["Alternate part label"],
+        "diagnosticCodes": ["toc-duplicate-boundary", "reading-order-fallback"],
+        "counts": {
+          "aliasCount": 1,
+          "duplicateBoundaryCount": 1,
+          "fallbackUnitCount": 1,
+          "outOfOrderTocEntryCount": 0,
+          "readingOrderResourceCount": 4,
+          "selectedTocEntryCount": 4,
+          "tocEntryCount": 5,
+          "unitCount": 4,
+          "unresolvedTocEntryCount": 0
+        }
+      }
+    },
+    {
+      "name": "out of order unresolved entry and middle fallback",
+      "granularity": "top-level",
+      "input": {
+        "readingOrder": [
+          { "children": [], "href": "text/a.xhtml", "title": "A" },
+          { "children": [], "href": "text/b.xhtml", "title": "B" },
+          { "children": [], "href": "text/c.xhtml", "title": "C" }
+        ],
+        "tableOfContents": [
+          { "children": [], "href": "text/c.xhtml", "title": "C" },
+          { "children": [], "href": "notes/missing.xhtml", "title": "Missing" },
+          { "children": [], "href": "text/a.xhtml", "title": "A" }
+        ],
+        "positions": [
+          {
+            "href": "text/a.xhtml",
+            "locations": { "position": 1, "totalProgression": 0 },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/b.xhtml",
+            "locations": { "position": 2, "totalProgression": 0.3333333333 },
+            "type": "application/xhtml+xml"
+          },
+          {
+            "href": "text/c.xhtml",
+            "locations": { "position": 3, "totalProgression": 0.6666666667 },
+            "type": "application/xhtml+xml"
+          }
+        ]
+      },
+      "expected": {
+        "unitHrefs": ["text/a.xhtml", "text/b.xhtml", "text/c.xhtml"],
+        "unitSources": ["toc", "reading-order-fallback", "toc"],
+        "unitTitles": ["A", "B", "C"],
+        "startPositions": [1, 2, 3],
+        "endPositionsExclusive": [2, 3, 4],
+        "aliasTitles": [],
+        "diagnosticCodes": [
+          "toc-entry-unresolved",
+          "toc-entry-out-of-order",
+          "reading-order-fallback"
+        ],
+        "counts": {
+          "aliasCount": 0,
+          "duplicateBoundaryCount": 0,
+          "fallbackUnitCount": 1,
+          "outOfOrderTocEntryCount": 1,
+          "readingOrderResourceCount": 3,
+          "selectedTocEntryCount": 3,
+          "tocEntryCount": 3,
+          "unitCount": 3,
+          "unresolvedTocEntryCount": 1
+        }
+      }
+    },
+    {
+      "name": "empty toc and unavailable positions fall back by resource",
+      "granularity": "leaf",
+      "input": {
+        "readingOrder": [
+          { "children": [], "href": "text/one.xhtml", "title": "One" },
+          { "children": [], "href": "text/two.xhtml", "title": "Two" }
+        ],
+        "tableOfContents": [],
+        "positions": []
+      },
+      "expected": {
+        "unitHrefs": ["text/one.xhtml", "text/two.xhtml"],
+        "unitSources": ["reading-order-fallback", "reading-order-fallback"],
+        "unitTitles": ["One", "Two"],
+        "startPositions": [null, null],
+        "endPositionsExclusive": [null, null],
+        "aliasTitles": [],
+        "diagnosticCodes": [
+          "positions-unavailable",
+          "toc-empty",
+          "reading-order-fallback",
+          "reading-order-fallback"
+        ],
+        "counts": {
+          "aliasCount": 0,
+          "duplicateBoundaryCount": 0,
+          "fallbackUnitCount": 2,
+          "outOfOrderTocEntryCount": 0,
+          "readingOrderResourceCount": 2,
+          "selectedTocEntryCount": 0,
+          "tocEntryCount": 0,
+          "unitCount": 2,
+          "unresolvedTocEntryCount": 0
+        }
+      }
+    },
+    {
+      "name": "normalized duplicate percent fragment and query",
+      "granularity": "top-level",
+      "input": {
+        "readingOrder": [{ "children": [], "href": "/OPS/text/chapter.xhtml", "title": "Chapter" }],
+        "tableOfContents": [
+          {
+            "children": [],
+            "href": "OPS/text/./chapter.xhtml#part%2D1",
+            "title": "Primary"
+          },
+          {
+            "children": [],
+            "href": "/OPS/text/chapter.xhtml?cache=1#part-1",
+            "title": "Alias"
+          }
+        ],
+        "positions": [
+          {
+            "href": "/OPS/text/chapter.xhtml",
+            "locations": {
+              "fragments": ["part-1"],
+              "position": 1,
+              "totalProgression": 0
+            },
+            "type": "application/xhtml+xml"
+          }
+        ]
+      },
+      "expected": {
+        "unitHrefs": ["OPS/text/chapter.xhtml#part-1"],
+        "unitSources": ["toc"],
+        "unitTitles": ["Primary"],
+        "startPositions": [1],
+        "endPositionsExclusive": [2],
+        "aliasTitles": ["Alias"],
+        "diagnosticCodes": ["toc-duplicate-boundary"],
+        "counts": {
+          "aliasCount": 1,
+          "duplicateBoundaryCount": 1,
+          "fallbackUnitCount": 0,
+          "outOfOrderTocEntryCount": 0,
+          "readingOrderResourceCount": 1,
+          "selectedTocEntryCount": 2,
+          "tocEntryCount": 2,
+          "unitCount": 1,
+          "unresolvedTocEntryCount": 0
+        }
+      }
+    },
+    {
+      "name": "distinct fragments retain coarse empty interval diagnostics",
+      "granularity": "top-level",
+      "input": {
+        "readingOrder": [{ "children": [], "href": "text/chapter.xhtml", "title": "Chapter" }],
+        "tableOfContents": [
+          { "children": [], "href": "text/chapter.xhtml#a", "title": "A" },
+          { "children": [], "href": "text/chapter.xhtml#b", "title": "B" }
+        ],
+        "positions": [
+          {
+            "href": "text/chapter.xhtml",
+            "locations": { "position": 1, "totalProgression": 0 },
+            "type": "application/xhtml+xml"
+          }
+        ]
+      },
+      "expected": {
+        "unitHrefs": ["text/chapter.xhtml#a", "text/chapter.xhtml#b"],
+        "unitSources": ["toc", "toc"],
+        "unitTitles": ["A", "B"],
+        "startPositions": [1, 1],
+        "endPositionsExclusive": [null, 2],
+        "aliasTitles": [],
+        "diagnosticCodes": ["unit-position-interval-empty", "unit-progression-interval-empty"],
+        "counts": {
+          "aliasCount": 0,
+          "duplicateBoundaryCount": 0,
+          "fallbackUnitCount": 0,
+          "outOfOrderTocEntryCount": 0,
+          "readingOrderResourceCount": 1,
+          "selectedTocEntryCount": 2,
+          "tocEntryCount": 2,
+          "unitCount": 2,
+          "unresolvedTocEntryCount": 0
+        }
+      }
+    }
+  ]
+}

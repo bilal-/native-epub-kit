@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-selection",
+  "recordType": "readerSelection",
+  "payload": {
+    "locator": {
+      "href": "text/urdu-reading.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["rtl-selection-target"], "progression": 0.125 },
+      "text": { "highlight": "منطقی انتخاب عبارت بیالیس" }
+    },
+    "text": "منطقی انتخاب عبارت بیالیس",
+    "copyAllowed": true,
+    "truncated": false,
+    "geometry": {
+      "coordinateSpace": "reader-view-and-window-v1",
+      "viewport": { "width": 390, "height": 612 },
+      "viewRect": { "x": 110, "y": 214, "width": 180, "height": 44 },
+      "windowRect": { "x": 126, "y": 312, "width": 180, "height": 44 },
+      "visibleViewRect": { "x": 110, "y": 214, "width": 180, "height": 44 },
+      "visibleWindowRect": { "x": 126, "y": 312, "width": 180, "height": 44 }
+    },
+    "language": "ur",
+    "direction": "rtl",
+    "navigationUnitId": "toc:0:urdu-reading"
+  }
+}

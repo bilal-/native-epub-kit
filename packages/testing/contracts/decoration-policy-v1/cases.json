@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "maximumGroups": 32,
+  "maximumDecorationsPerGroup": 10000,
+  "maximumChanges": 2048,
+  "maximumGroupUtf16Units": 64,
+  "maximumIdUtf16Units": 128,
+  "maximumDataUtf8Bytes": 8192,
+  "baseLocator": {
+    "href": "text/chapter.xhtml",
+    "type": "application/xhtml+xml",
+    "locations": { "fragments": ["paragraph-1"], "progression": 0.1 },
+    "text": { "highlight": "Addressable paragraph 1." }
+  },
+  "groupCases": [
+    { "name": "annotations", "input": " annotations ", "expected": "annotations" },
+    { "name": "search-results", "input": "search.results:v1", "expected": "search.results:v1" },
+    { "name": "empty", "input": "", "expectedError": true },
+    { "name": "script-delimiter", "input": "annotations');alert(1)//", "expectedError": true }
+  ],
+  "styleCases": [
+    {
+      "name": "highlight-normalized",
+      "input": { "type": "highlight", "tint": "#E8C97A" },
+      "expected": { "type": "highlight", "tint": "#e8c97a", "isActive": false }
+    },
+    {
+      "name": "underline-active-alpha",
+      "input": { "type": "underline", "tint": "#D4907AFF", "isActive": true },
+      "expected": { "type": "underline", "tint": "#d4907aff", "isActive": true }
+    },
+    {
+      "name": "margin-note-default",
+      "input": { "type": "margin-icon", "asset": "note" },
+      "expected": { "type": "margin-icon", "asset": "note", "tint": "#64748b" }
+    },
+    {
+      "name": "custom-rounded-defaults",
+      "input": {
+        "type": "custom",
+        "template": "rounded-box-v1",
+        "config": { "tint": "#8EB8CC", "borderWidth": 3 }
+      },
+      "expected": {
+        "type": "custom",
+        "template": "rounded-box-v1",
+        "config": {
+          "tint": "#8eb8cc",
+          "borderWidth": 3,
+          "borderRadius": 4,
+          "fillOpacity": 0.12,
+          "isActive": false
+        }
+      }
+    },
+    {
+      "name": "named-color-rejected",
+      "input": { "type": "highlight", "tint": "red" },
+      "expectedError": true
+    },
+    {
+      "name": "explicit-null-margin-tint-rejected",
+      "input": { "type": "margin-icon", "asset": "bookmark", "tint": null },
+      "expectedError": true
+    },
+    {
+      "name": "explicit-null-custom-config-rejected",
+      "input": { "type": "custom", "template": "rounded-box-v1", "config": null },
+      "expectedError": true
+    },
+    {
+      "name": "remote-margin-asset-rejected",
+      "input": { "type": "margin-icon", "asset": "https://example.com/icon.svg" },
+      "expectedError": true
+    },
+    {
+      "name": "raw-template-rejected",
+      "input": { "type": "custom", "template": "<script>alert(1)</script>" },
+      "expectedError": true
+    },
+    {
+      "name": "custom-extension-rejected",
+      "input": {
+        "type": "custom",
+        "template": "rounded-box-v1",
+        "config": { "tint": "#e8c97a", "stylesheet": "body{}" }
+      },
+      "expectedError": true
+    },
+    {
+      "name": "style-extension-rejected",
+      "input": { "type": "highlight", "tint": "#e8c97a", "script": "alert(1)" },
+      "expectedError": true
+    }
+  ],
+  "deltaCases": [
+    {
+      "name": "add-update-remove",
+      "initial": [{ "id": "one", "style": { "type": "highlight", "tint": "#e8c97a" } }],
+      "changes": [
+        {
+          "type": "add",
+          "decoration": { "id": "two", "style": { "type": "underline", "tint": "#8eb8cc" } }
+        },
+        {
+          "type": "update",
+          "decoration": {
+            "id": "one",
+            "style": { "type": "margin-icon", "asset": "note", "tint": "#d4907a" }
+          }
+        },
+        { "type": "remove", "id": "two" }
+      ],
+      "expected": [
+        {
+          "id": "one",
+          "style": { "type": "margin-icon", "asset": "note", "tint": "#d4907a" }
+        }
+      ]
+    },
+    {
+      "name": "add-existing-rejected",
+      "initial": [{ "id": "one", "style": { "type": "highlight", "tint": "#e8c97a" } }],
+      "changes": [
+        {
+          "type": "add",
+          "decoration": { "id": "one", "style": { "type": "underline", "tint": "#8eb8cc" } }
+        }
+      ],
+      "expectedError": true
+    },
+    {
+      "name": "update-missing-rejected",
+      "initial": [],
+      "changes": [
+        {
+          "type": "update",
+          "decoration": { "id": "missing", "style": { "type": "highlight", "tint": "#e8c97a" } }
+        }
+      ],
+      "expectedError": true
+    },
+    {
+      "name": "remove-missing-rejected",
+      "initial": [],
+      "changes": [{ "type": "remove", "id": "missing" }],
+      "expectedError": true
+    }
+  ]
+}

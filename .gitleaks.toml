@@ -1,0 +1,16 @@
+title = "Native EPUB Kit secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated dependencies and build output"
+paths = [
+  '''^apps/example/android/''',
+  '''^apps/example/ios/''',
+  '''^artifacts/''',
+  '''^node_modules/''',
+  '''^packages/native-epub-kit/android/build/''',
+  '''^packages/native-epub-kit/build/''',
+  '''^packages/testing/build/''',
+]

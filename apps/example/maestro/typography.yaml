@@ -1,0 +1,74 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- launchApp
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-rtl'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'typography-preserve'
+- extendedWaitUntil:
+    visible: '.*preserve.*marker none.*range finite.*selection available.*locator stable.*'
+    timeout: 20000
+- takeScreenshot: typography-preserve
+- tapOn:
+    id: 'typography-hybrid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*hybrid.*font Lateef Qualification.*loaded yes.*faces 400 yes 700 yes.*marker hybrid.*en ltr/.*Lateef Qualification.*ar rtl/.*Lateef Qualification.*ur rtl/.*Lateef Qualification.*range finite.*selection available.*locator stable.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*typography anchor preserved yes.*typography progression preserved yes.*'
+    timeout: 20000
+- takeScreenshot: typography-hybrid
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible: '.*hybrid.*loaded yes.*range finite.*locator stable.*'
+    timeout: 20000
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*hybrid.*loaded yes.*range finite.*locator stable.*'
+    timeout: 20000
+- takeScreenshot: typography-hybrid-after-rotation
+- tapOn:
+    id: 'typography-override'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*override.*font Lateef Qualification.*loaded yes.*faces 400 yes 700 yes.*marker override.*en ltr/.*Lateef Qualification.*ar rtl/.*Lateef Qualification.*ur rtl/.*Lateef Qualification.*range finite.*selection available.*locator stable.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*typography anchor preserved yes.*typography progression preserved yes.*'
+    timeout: 20000
+- takeScreenshot: typography-override
+- tapOn:
+    id: 'fixture-mixed-bidi'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*override.*font Lateef Qualification.*loaded yes.*marker override.*en ltr/.*Lateef Qualification.*ar rtl/.*Lateef Qualification.*ur rtl/.*Lateef Qualification.*range finite.*selection available.*locator stable.*'
+    timeout: 30000
+- takeScreenshot: typography-mixed-bidi

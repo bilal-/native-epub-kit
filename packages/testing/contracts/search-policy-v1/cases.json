@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "bounds": {
+    "defaultPageSize": 50,
+    "maximumPageSize": 100,
+    "maximumResults": 2000,
+    "maximumQueryUtf16Units": 256,
+    "maximumLanguageUtf16Units": 64,
+    "maximumExcerptContextUtf16Units": 256,
+    "maximumExcerptHighlightUtf16Units": 256,
+    "maximumResourceTitleUtf16Units": 512,
+    "maximumSessionIdUtf16Units": 128,
+    "maximumCursorUtf16Units": 128
+  },
+  "defaults": {
+    "caseSensitive": false,
+    "diacriticSensitive": false,
+    "pageSize": 50
+  },
+  "decorationGroups": {
+    "results": "search.results:v1",
+    "current": "search.current:v1"
+  },
+  "requestCases": [
+    {
+      "name": "defaults-and-trim",
+      "query": "  reader platform  ",
+      "options": null,
+      "expected": {
+        "query": "reader platform",
+        "options": {
+          "caseSensitive": false,
+          "diacriticSensitive": false,
+          "pageSize": 50
+        }
+      }
+    },
+    {
+      "name": "rtl-language-and-options",
+      "query": "  اردو مطالعہ  ",
+      "options": {
+        "caseSensitive": true,
+        "diacriticSensitive": true,
+        "language": "ur-Arab-PK",
+        "pageSize": 25
+      },
+      "expected": {
+        "query": "اردو مطالعہ",
+        "options": {
+          "caseSensitive": true,
+          "diacriticSensitive": true,
+          "language": "ur-Arab-PK",
+          "pageSize": 25
+        }
+      }
+    },
+    {
+      "name": "canonical-query",
+      "query": "  Café  ",
+      "options": { "language": "fr" },
+      "expected": {
+        "query": "Café",
+        "options": {
+          "caseSensitive": false,
+          "diacriticSensitive": false,
+          "language": "fr",
+          "pageSize": 50
+        }
+      }
+    },
+    {
+      "name": "empty-query",
+      "query": " \n\t ",
+      "options": null,
+      "expectedError": true
+    },
+    {
+      "name": "query-too-long",
+      "queryRepeat": { "value": "x", "count": 257 },
+      "options": null,
+      "expectedError": true
+    },
+    {
+      "name": "unknown-option",
+      "query": "reader",
+      "options": { "regularExpression": true },
+      "expectedError": true
+    },
+    {
+      "name": "invalid-page-size",
+      "query": "reader",
+      "options": { "pageSize": 101 },
+      "expectedError": true
+    },
+    {
+      "name": "invalid-language",
+      "query": "reader",
+      "options": { "language": "ur_Arab_PK" },
+      "expectedError": true
+    }
+  ],
+  "excerptCases": [
+    {
+      "name": "preserves-bidi-context",
+      "before": "English before ",
+      "highlight": "اردو متن",
+      "after": " and English after.",
+      "expected": {
+        "before": "English before ",
+        "highlight": "اردو متن",
+        "after": " and English after.",
+        "truncated": false
+      }
+    },
+    {
+      "name": "bounds-nearest-context",
+      "beforeRepeat": { "value": "ب", "count": 300 },
+      "highlight": "نتیجہ",
+      "afterRepeat": { "value": "ا", "count": 300 },
+      "expectedLengths": {
+        "before": 256,
+        "highlight": 5,
+        "after": 256
+      },
+      "expectedTruncated": true
+    }
+  ]
+}

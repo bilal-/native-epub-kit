@@ -1,0 +1,45 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*publication Minimal English Fixture.*layout reflowable.*fonts on.*toc top 2 total 2 depth 0 fragments 0 duplicates 0.*reading 2.*chain valid.*warnings none.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*layout reflowable.*toc top 2 total 6 depth 2 fragments 5 duplicates 1.*reading 2.*chain valid.*warnings toc-duplicate-targets.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-footnotes'
+- extendedWaitUntil:
+    visible: '.*publication Footnote and Link Fixture.*layout reflowable.*reading 2.*chain valid.*warnings toc-incomplete.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-stress'
+- extendedWaitUntil:
+    visible: '.*publication Annotation Stress Fixture.*layout reflowable.*positions [2-9][0-9][0-9].*page 256/256 offset 0 next 256.*chain valid.*'
+    timeout: 60000
+- tapOn:
+    id: 'fixture-fixed'
+- extendedWaitUntil:
+    visible: '.*publication Fixed Layout Fixture.*layout fixed.*fonts off.*reading 2.*chain valid.*warnings fixed-layout-preferences-limited.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-minimal'
+- extendedWaitUntil:
+    visible: '.*publication Minimal English Fixture.*layout reflowable.*chain valid.*warnings none.*'
+    timeout: 30000
+- takeScreenshot: publication-data-matrix

@@ -1,0 +1,13 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "native-epub-kit": ["../../packages/native-epub-kit/src/index.ts"],
+      "native-epub-kit/*": ["../../packages/native-epub-kit/src/*"]
+    }
+  },
+  "include": ["App.tsx", "CorpusSmokeApp.tsx", "PerformanceSmokeApp.tsx", "index.ts"]
+}

@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Native EPUB Kit Example",
+    "slug": "native-epub-kit-example",
+    "version": "0.0.0",
+    "platforms": ["ios", "android"],
+    "orientation": "default",
+    "newArchEnabled": true,
+    "scheme": "native-epub-kit-example",
+    "plugins": [
+      "expo-dev-client",
+      [
+        "native-epub-kit",
+        {
+          "fonts": [
+            {
+              "family": "Lateef Qualification",
+              "source": "./assets/fonts/LateefQualification.ttf",
+              "style": "normal",
+              "weight": 400
+            },
+            {
+              "family": "Lateef Qualification",
+              "source": "./assets/fonts/LateefQualification.ttf",
+              "style": "normal",
+              "weight": 700
+            }
+          ]
+        }
+      ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.bilal.nativeepubkit.example",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.bilal.nativeepubkit.example",
+      "predictiveBackGestureEnabled": true
+    }
+  }
+}

@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible defect in the SDK or example.
+title: '[Bug]: '
+labels: ['bug', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not submit security vulnerabilities or restricted EPUB content here.
+        Use a generated or clearly licensed minimal fixture.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include exact steps and a public repository or fixture when possible.
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options:
+        - iOS
+        - Android
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Version matrix
+      description: Package, Expo, React Native, OS, device, and Readium versions.
+      placeholder: native-epub-kit 0.x; Expo 56; RN 0.85; iOS 16.4
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs
+      description: Remove content text, locators, source URLs, paths, credentials, and user data.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: My fixture is generated or clearly licensed and contains no private data.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true

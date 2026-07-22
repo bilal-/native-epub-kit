@@ -1,0 +1,20 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: 'PERFORMANCE_CORE_READY'
+    timeout: 600000
+- assertNotVisible: 'PERFORMANCE_CORE_FAIL'
+- assertNotVisible: 'PERFORMANCE_FAIL'
+- takeScreenshot: performance-core-ready

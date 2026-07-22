@@ -1,0 +1,35 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- launchApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-footnotes'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-footnotes'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn:
+    point: '29%,73%'
+- extendedWaitUntil:
+    visible: '.*unsupported link.*blocked.*mailto:reader@example.com.*scheme mailto.*'
+    timeout: 10000
+- assertVisible: 'Reading with notes'
+- takeScreenshot: unsupported-scheme-policy

@@ -1,0 +1,156 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  NODE_ENV: test
+
+jobs:
+  javascript:
+    name: JavaScript and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 11.12.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.13.1
+          cache: pnpm
+      - name: Install Java for EPUBCheck
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate workflow policy
+        run: pnpm ci:workflows
+      - name: Validate production dependency licenses
+        run: pnpm licenses:check
+      - name: Enforce Changeset
+        if: github.event_name == 'pull_request'
+        run: pnpm changeset:check --base "origin/${{ github.base_ref }}"
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Verify documentation and examples
+        run: pnpm docs:check
+      - name: Test
+        run: pnpm test
+      - name: Verify generated EPUB fixtures
+        run: pnpm fixtures:verify
+      - name: Build packages
+        run: pnpm build
+      - name: Pack public package
+        run: |
+          mkdir -p artifacts
+          pnpm --filter native-epub-kit pack --pack-destination artifacts
+          TARBALL="$(find artifacts -maxdepth 1 -name 'native-epub-kit-*.tgz' -print -quit)"
+          test -n "$TARBALL"
+          ! tar -tzf "$TARBALL" | grep -q '^package/android/build/'
+      - name: Upload packed package
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: native-epub-kit-package
+          path: artifacts/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  android:
+    name: Android native build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 11.12.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.13.1
+          cache: pnpm
+      - name: Install Java
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Configure Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Android project
+        run: pnpm --filter native-epub-kit-example exec expo prebuild --platform android --no-install
+      - name: Lint, test, and assemble
+        run: >-
+          ./apps/example/android/gradlew -p apps/example/android --no-daemon
+          :native-epub-kit:lintDebug :native-epub-kit:testDebugUnitTest
+          :app:assembleDebug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: native-epub-kit-example-android
+          path: apps/example/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
+  ios:
+    name: iOS native build
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 11.12.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.13.1
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test shared Swift contracts
+        run: pnpm --filter @native-epub-kit/testing contracts:test:swift
+      - name: Test Swift lifecycle and source primitives
+        run: pnpm --filter @native-epub-kit/testing lifecycle:test:swift
+      - name: Generate iOS project
+        run: pnpm --filter native-epub-kit-example exec expo prebuild --platform ios --no-install
+      - name: Install CocoaPods
+        working-directory: apps/example/ios
+        run: pod install
+      - name: Build iOS simulator app
+        run: >-
+          xcodebuild -quiet
+          -workspace apps/example/ios/NativeEPUBKitExample.xcworkspace
+          -scheme NativeEPUBKitExample -configuration Debug
+          -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO build

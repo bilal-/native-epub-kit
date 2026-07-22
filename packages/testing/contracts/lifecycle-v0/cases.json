@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "ready emits once",
+      "steps": [
+        { "generation": 1, "state": "opening", "accepted": true },
+        { "generation": 1, "state": "ready", "accepted": true },
+        { "generation": 1, "state": "ready", "accepted": false },
+        { "generation": 1, "state": "waitingForHost", "accepted": false }
+      ]
+    },
+    {
+      "name": "error is terminal until close",
+      "steps": [
+        { "generation": 2, "state": "opening", "accepted": true },
+        { "generation": 2, "state": "error", "accepted": true },
+        { "generation": 2, "state": "error", "accepted": false },
+        { "generation": 2, "state": "ready", "accepted": false },
+        { "generation": 2, "state": "idle", "accepted": true }
+      ]
+    },
+    {
+      "name": "replacement rejects stale completion",
+      "steps": [
+        { "generation": 3, "state": "opening", "accepted": true },
+        { "generation": 4, "state": "closing", "accepted": true },
+        { "generation": 5, "state": "opening", "accepted": true },
+        { "generation": 3, "state": "ready", "accepted": false },
+        { "generation": 5, "state": "ready", "accepted": true }
+      ]
+    },
+    {
+      "name": "host waiting does not duplicate",
+      "steps": [
+        { "generation": 6, "state": "opening", "accepted": true },
+        { "generation": 6, "state": "waitingForHost", "accepted": true },
+        { "generation": 6, "state": "waitingForHost", "accepted": false },
+        { "generation": 6, "state": "ready", "accepted": true }
+      ]
+    },
+    {
+      "name": "close and unmount are idempotent",
+      "steps": [
+        { "generation": 7, "state": "closing", "accepted": true },
+        { "generation": 7, "state": "unmounted", "accepted": true },
+        { "generation": 7, "state": "unmounted", "accepted": false },
+        { "generation": 6, "state": "ready", "accepted": false },
+        { "generation": 8, "state": "opening", "accepted": true }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "defaults": {
+    "theme": "light",
+    "fontSize": 1,
+    "layout": "scrolled",
+    "spread": "auto",
+    "pageMargins": 1,
+    "lineHeight": 1.2,
+    "textAlignment": "auto",
+    "publisherStyles": true,
+    "readingProgression": "auto"
+  },
+  "ranges": {
+    "fontSize": { "minimum": 0.1, "maximum": 5 },
+    "pageMargins": { "minimum": 0, "maximum": 4 },
+    "lineHeight": { "minimum": 1, "maximum": 2 }
+  },
+  "normalizationCases": [
+    { "name": "defaults", "input": {}, "valid": true, "expected": null },
+    {
+      "name": "complete-custom",
+      "input": {
+        "theme": "dark",
+        "fontSize": 1.4,
+        "layout": "paginated",
+        "spread": "always",
+        "pageMargins": 2.2,
+        "lineHeight": 1.8,
+        "textAlignment": "justify",
+        "publisherStyles": false,
+        "readingProgression": "rtl"
+      },
+      "valid": true,
+      "expected": null
+    },
+    { "name": "unknown-field", "input": { "columns": 2 }, "valid": false },
+    { "name": "font-size-low", "input": { "fontSize": 0.09 }, "valid": false },
+    { "name": "font-size-high", "input": { "fontSize": 5.01 }, "valid": false },
+    { "name": "margin-low", "input": { "pageMargins": -0.01 }, "valid": false },
+    { "name": "margin-high", "input": { "pageMargins": 4.01 }, "valid": false },
+    { "name": "line-height-low", "input": { "lineHeight": 0.99 }, "valid": false },
+    { "name": "line-height-high", "input": { "lineHeight": 2.01 }, "valid": false },
+    { "name": "invalid-theme", "input": { "theme": "system" }, "valid": false },
+    { "name": "invalid-layout", "input": { "layout": "columns" }, "valid": false },
+    { "name": "invalid-spread", "input": { "spread": "two" }, "valid": false },
+    { "name": "invalid-alignment", "input": { "textAlignment": "natural" }, "valid": false },
+    { "name": "invalid-progression", "input": { "readingProgression": "ttb" }, "valid": false },
+    { "name": "invalid-publisher", "input": { "publisherStyles": "yes" }, "valid": false }
+  ],
+  "policyCases": [
+    {
+      "name": "reflowable-publisher-styles",
+      "layout": "reflowable",
+      "preferences": {},
+      "applied": [
+        "theme",
+        "fontSize",
+        "layout",
+        "pageMargins",
+        "publisherStyles",
+        "readingProgression"
+      ],
+      "unsupported": {
+        "spread": "reflowable-layout",
+        "lineHeight": "publisher-styles",
+        "textAlignment": "publisher-styles"
+      },
+      "warnings": ["spread-fixed-layout-only", "publisher-styles-disable-advanced-text"]
+    },
+    {
+      "name": "reflowable-user-styles",
+      "layout": "reflowable",
+      "preferences": { "publisherStyles": false },
+      "applied": [
+        "theme",
+        "fontSize",
+        "layout",
+        "pageMargins",
+        "lineHeight",
+        "textAlignment",
+        "publisherStyles",
+        "readingProgression"
+      ],
+      "unsupported": { "spread": "reflowable-layout" },
+      "warnings": ["spread-fixed-layout-only"]
+    },
+    {
+      "name": "fixed-layout",
+      "layout": "fixed",
+      "preferences": { "spread": "always", "readingProgression": "rtl" },
+      "applied": ["spread", "readingProgression"],
+      "unsupported": {
+        "theme": "fixed-layout",
+        "fontSize": "fixed-layout",
+        "layout": "fixed-layout",
+        "pageMargins": "fixed-layout",
+        "lineHeight": "fixed-layout",
+        "textAlignment": "fixed-layout",
+        "publisherStyles": "fixed-layout"
+      },
+      "warnings": ["fixed-layout-reflow-preferences-disabled"]
+    }
+  ]
+}

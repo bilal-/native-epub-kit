@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "maximumRules": 32,
+  "maximumFontFamilies": 8,
+  "cases": [
+    {
+      "name": "absent-profile",
+      "availableFontFamilies": [],
+      "profile": null,
+      "expected": { "status": "absent", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "hybrid-mixed-script-rules",
+      "availableFontFamilies": ["Lateef", "Reader \"Serif\""],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "colors": {
+          "background": "#f5f0e8",
+          "link": "#005a8d",
+          "text": "#3d2b1f"
+        },
+        "defaultFontFamilies": ["Lateef", "serif"],
+        "rules": [
+          {
+            "target": { "kind": "language", "value": "UR-pk" },
+            "direction": "rtl",
+            "lineHeight": 1.8
+          },
+          {
+            "target": { "kind": "class", "value": "quranic" },
+            "color": "#1a5f4a",
+            "fontWeight": 700
+          },
+          {
+            "target": { "kind": "direction", "value": "ltr" },
+            "fontFamilies": ["Reader \"Serif\"", "sans-serif"]
+          }
+        ]
+      },
+      "expected": {
+        "status": "valid",
+        "profile": {
+          "publisherStyles": "hybrid",
+          "colors": {
+            "background": "#F5F0E8",
+            "link": "#005A8D",
+            "text": "#3D2B1F"
+          },
+          "defaultFontFamilies": ["Lateef", "serif"],
+          "rules": [
+            {
+              "target": { "kind": "language", "value": "ur-pk" },
+              "direction": "rtl",
+              "lineHeight": 1.8
+            },
+            {
+              "target": { "kind": "class", "value": "quranic" },
+              "color": "#1A5F4A",
+              "fontWeight": 700
+            },
+            {
+              "target": { "kind": "direction", "value": "ltr" },
+              "fontFamilies": ["Reader \"Serif\"", "sans-serif"]
+            }
+          ]
+        },
+        "stylesheet": ":root, body { background-color: #F5F0E8 !important; color: #3D2B1F !important; }\n:root a:link:link:link, :root a:link:link:link *, :root a:visited:visited:visited, :root a:visited:visited:visited * { color: #005A8D !important; }\n:root :lang(ur-pk):lang(ur-pk), :root [lang|=\"ur-pk\"][lang|=\"ur-pk\"] { font-family: \"Lateef\", serif !important; direction: rtl !important; line-height: 1.8 !important; }\n:root .quranic.quranic { font-family: \"Lateef\", serif !important; color: #1A5F4A !important; font-weight: 700 !important; }\n:root :dir(ltr):dir(ltr), :root [dir=\"ltr\"][dir=\"ltr\"] { font-family: \"Reader \\\"Serif\\\"\", sans-serif !important; }"
+      }
+    },
+    {
+      "name": "override-global-family-and-targeted-direction",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "override",
+        "defaultFontFamilies": ["Lateef", "serif"],
+        "rules": [{ "target": { "kind": "class", "value": "english" }, "direction": "ltr" }]
+      },
+      "expected": {
+        "status": "valid",
+        "profile": {
+          "publisherStyles": "override",
+          "defaultFontFamilies": ["Lateef", "serif"],
+          "rules": [{ "target": { "kind": "class", "value": "english" }, "direction": "ltr" }]
+        },
+        "stylesheet": ":root, body, body * { font-family: \"Lateef\", serif !important; }\n:root .english.english { font-family: \"Lateef\", serif !important; direction: ltr !important; }"
+      }
+    },
+    {
+      "name": "preserve-retains-configuration-without-injection",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "preserve",
+        "colors": {
+          "background": "#1a1713",
+          "link": "#9fd3f2",
+          "text": "#f0e5cc"
+        },
+        "defaultFontFamilies": ["Lateef"],
+        "rules": [{ "target": { "kind": "language", "value": "ar" }, "direction": "rtl" }]
+      },
+      "expected": {
+        "status": "valid",
+        "profile": {
+          "publisherStyles": "preserve",
+          "colors": {
+            "background": "#1A1713",
+            "link": "#9FD3F2",
+            "text": "#F0E5CC"
+          },
+          "defaultFontFamilies": ["Lateef"],
+          "rules": [{ "target": { "kind": "language", "value": "ar" }, "direction": "rtl" }]
+        },
+        "stylesheet": ""
+      }
+    },
+    {
+      "name": "invalid-unknown-root-field",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "defaultFontFamilies": ["Lateef"],
+        "rules": [],
+        "css": "body { display: none }"
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-color-profile",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "colors": { "background": "#fff", "link": "red", "text": "#000000" },
+        "rules": []
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-selector-like-class",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [
+          {
+            "target": { "kind": "class", "value": "urdu,body" },
+            "fontFamilies": ["Lateef"]
+          }
+        ]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-unavailable-native-family",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "override",
+        "defaultFontFamilies": ["Missing Family"],
+        "rules": []
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-empty-rule",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [{ "target": { "kind": "direction", "value": "rtl" } }]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-numeric-declarations",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [
+          {
+            "target": { "kind": "language", "value": "ur" },
+            "lineHeight": 4.1,
+            "fontWeight": 400.5
+          }
+        ]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "invalid-duplicate-family",
+      "availableFontFamilies": ["Lateef"],
+      "profile": {
+        "publisherStyles": "override",
+        "defaultFontFamilies": ["Lateef", "Lateef"],
+        "rules": []
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    }
+  ]
+}

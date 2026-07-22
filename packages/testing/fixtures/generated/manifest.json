@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "generator": "packages/testing/scripts/build-fixtures.mjs",
+  "fixtures": [
+    {
+      "id": "minimal-en",
+      "file": "minimal-en.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "epub3",
+        "ltr",
+        "multiple-spine-items",
+        "vertical-scroll",
+        "progress",
+        "gesture-boundary"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 3452,
+      "sha256": "e275023b6a7a78d299ef63db8f7e0029b8a71af1c619bdb2d41ace607399384d"
+    },
+    {
+      "id": "toc-complex",
+      "file": "toc-complex.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "nested-toc",
+        "same-resource-fragment",
+        "cross-resource-fragment"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 2847,
+      "sha256": "6e1a745571480fad6d966d44bfe475bb65a0bdebbfa42b41bac4e77e481dabaa"
+    },
+    {
+      "id": "footnotes",
+      "file": "footnotes.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "same-resource-footnote",
+        "cross-resource-footnote",
+        "backlink",
+        "ordinary-internal-link",
+        "external-link"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 4095,
+      "sha256": "1cd54a83c91729e7caee43f8a5dff99e336ff6adf6b649ef47560c866db2ce36"
+    },
+    {
+      "id": "rtl-custom-font",
+      "file": "rtl-custom-font.epub",
+      "language": "ur",
+      "direction": "rtl",
+      "features": [
+        "rtl",
+        "urdu",
+        "arabic",
+        "custom-font",
+        "rtl-spine",
+        "multiple-spine-items",
+        "vertical-scroll",
+        "progress",
+        "gesture-boundary",
+        "native-selection-target"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 465330,
+      "sha256": "270603d4f22c7b3ff369040ac410b6cb8777f4cc53ad6589e65b73cb121c2b57"
+    },
+    {
+      "id": "mixed-bidi",
+      "file": "mixed-bidi.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "mixed-bidi",
+        "bdi",
+        "bdo",
+        "inline-direction-switch"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 2434,
+      "sha256": "fa030d9173f6a236fc92e8b82f6596cbfdb234483cf3ab20548c3fcf3f2b63b6"
+    },
+    {
+      "id": "images",
+      "file": "images.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "svg-image",
+        "image-alt",
+        "image-caption"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 2843,
+      "sha256": "dff9e1ced8a7121b58be9027a866dd0cf1569927bd0c05469f13eb718c362f68"
+    },
+    {
+      "id": "malformed-link",
+      "file": "malformed-link.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "missing-resource-link",
+        "negative-validation"
+      ],
+      "validation": {
+        "outcome": "invalid",
+        "requiredMessageIds": [
+          "RSC-007"
+        ]
+      },
+      "bytes": 2265,
+      "sha256": "77bb3828d17d05c203d595ebc9bae24ec88f9c86da4498128bbba297d2a9adc6"
+    },
+    {
+      "id": "annotation-stress",
+      "file": "annotation-stress.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "annotation-stress",
+        "2048-addressable-paragraphs",
+        "long-document",
+        "multi-page-position-list"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 305497,
+      "sha256": "fa05a6a3271a56f4c5a4c244a130e0b136f55c4a5c12db9ca3a3e40b9c7a1019"
+    },
+    {
+      "id": "fixed-layout",
+      "file": "fixed-layout.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "epub3",
+        "fixed-layout",
+        "multiple-spine-items",
+        "capability-gating"
+      ],
+      "validation": {
+        "outcome": "valid"
+      },
+      "bytes": 2889,
+      "sha256": "fbd41cab368bbbac0497d9aa1f078ab086580656f0600afc940dd2dfbb94a0db"
+    },
+    {
+      "id": "search-failure",
+      "file": "search-failure.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "search",
+        "missing-reading-resource",
+        "negative-validation"
+      ],
+      "validation": {
+        "outcome": "invalid",
+        "requiredMessageIds": [
+          "RSC-001"
+        ]
+      },
+      "bytes": 2265,
+      "sha256": "f9bb5e02059cc0801f743cb898a04d673f445ae335f88025477ff11f5f1cc502"
+    }
+  ]
+}

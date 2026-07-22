@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "continuous start",
+      "event": {
+        "generation": 4,
+        "instanceId": "reader-progress-contract",
+        "locator": {
+          "href": "text/a.xhtml",
+          "locations": { "position": 1, "totalProgression": 0 },
+          "type": "application/xhtml+xml"
+        },
+        "overallProgress": 0,
+        "position": 1,
+        "precision": "continuous",
+        "reason": "initial",
+        "sequence": 1,
+        "totalPositions": 6
+      },
+      "expected": {
+        "chapterProgress": 0,
+        "overallProgress": 0,
+        "position": 1,
+        "precision": "continuous",
+        "title": "Chapter A"
+      }
+    },
+    {
+      "name": "continuous midpoint",
+      "event": {
+        "generation": 4,
+        "instanceId": "reader-progress-contract",
+        "locator": {
+          "href": "text/a.xhtml",
+          "locations": { "position": 2, "totalProgression": 0.16666666666666666 },
+          "type": "application/xhtml+xml"
+        },
+        "overallProgress": 0.16666666666666666,
+        "position": 2,
+        "precision": "continuous",
+        "reason": "user-scroll",
+        "sequence": 2,
+        "totalPositions": 6
+      },
+      "expected": {
+        "chapterProgress": 0.5,
+        "overallProgress": 0.16666666666666666,
+        "position": 2,
+        "precision": "continuous",
+        "title": "Chapter A"
+      }
+    },
+    {
+      "name": "start-inclusive chapter boundary",
+      "event": {
+        "generation": 4,
+        "instanceId": "reader-progress-contract",
+        "locator": {
+          "href": "text/b.xhtml",
+          "locations": { "position": 3, "totalProgression": 0.3333333333333333 },
+          "type": "application/xhtml+xml"
+        },
+        "overallProgress": 0.3333333333333333,
+        "position": 3,
+        "precision": "continuous",
+        "reason": "user-page-turn",
+        "sequence": 3,
+        "totalPositions": 6
+      },
+      "expected": {
+        "chapterProgress": 0,
+        "overallProgress": 0.3333333333333333,
+        "position": 3,
+        "precision": "continuous",
+        "title": "Chapter B"
+      }
+    },
+    {
+      "name": "position precision midpoint",
+      "event": {
+        "generation": 4,
+        "instanceId": "reader-progress-contract",
+        "locator": {
+          "href": "text/b.xhtml",
+          "locations": { "position": 4, "totalProgression": 0.5 },
+          "type": "application/xhtml+xml"
+        },
+        "overallProgress": 0.5,
+        "position": 4,
+        "precision": "position",
+        "reason": "preference-change",
+        "sequence": 4,
+        "totalPositions": 6
+      },
+      "expected": {
+        "chapterProgress": 0.5,
+        "overallProgress": 0.5,
+        "position": 4,
+        "precision": "position",
+        "title": "Chapter B"
+      }
+    },
+    {
+      "name": "final publication boundary",
+      "event": {
+        "generation": 4,
+        "instanceId": "reader-progress-contract",
+        "locator": {
+          "href": "text/c.xhtml",
+          "locations": { "position": 6, "progression": 1, "totalProgression": 1 },
+          "type": "application/xhtml+xml"
+        },
+        "overallProgress": 1,
+        "position": 6,
+        "precision": "continuous",
+        "reason": "programmatic",
+        "sequence": 5,
+        "totalPositions": 6
+      },
+      "expected": {
+        "chapterProgress": 1,
+        "overallProgress": 1,
+        "position": 6,
+        "precision": "continuous",
+        "title": "Chapter C"
+      }
+    }
+  ],
+  "navigation": {
+    "positions": [
+      {
+        "href": "text/a.xhtml",
+        "locations": { "position": 1, "totalProgression": 0 },
+        "type": "application/xhtml+xml"
+      },
+      {
+        "href": "text/a.xhtml",
+        "locations": { "position": 2, "totalProgression": 0.16666666666666666 },
+        "type": "application/xhtml+xml"
+      },
+      {
+        "href": "text/b.xhtml",
+        "locations": { "position": 3, "totalProgression": 0.3333333333333333 },
+        "type": "application/xhtml+xml"
+      },
+      {
+        "href": "text/b.xhtml",
+        "locations": { "position": 4, "totalProgression": 0.5 },
+        "type": "application/xhtml+xml"
+      },
+      {
+        "href": "text/c.xhtml",
+        "locations": { "position": 5, "totalProgression": 0.6666666666666666 },
+        "type": "application/xhtml+xml"
+      },
+      {
+        "href": "text/c.xhtml",
+        "locations": { "position": 6, "totalProgression": 0.8333333333333334 },
+        "type": "application/xhtml+xml"
+      }
+    ],
+    "readingOrder": [
+      { "children": [], "href": "text/a.xhtml", "title": "A" },
+      { "children": [], "href": "text/b.xhtml", "title": "B" },
+      { "children": [], "href": "text/c.xhtml", "title": "C" }
+    ],
+    "tableOfContents": [
+      { "children": [], "href": "text/a.xhtml", "title": "Chapter A" },
+      { "children": [], "href": "text/b.xhtml", "title": "Chapter B" },
+      { "children": [], "href": "text/c.xhtml", "title": "Chapter C" }
+    ]
+  }
+}
