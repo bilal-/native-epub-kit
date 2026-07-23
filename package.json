@@ -1,0 +1,69 @@
+{
+  "name": "native-epub-kit-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "changeset": "changeset",
+    "changeset:check": "node scripts/check-changeset.mjs",
+    "ci:workflows": "node scripts/validate-workflows.mjs",
+    "clean": "pnpm -r --if-present clean",
+    "docs:api": "node scripts/generate-api-reference.mjs",
+    "docs:api:check": "node scripts/generate-api-reference.mjs --check",
+    "docs:check": "pnpm docs:api:check && pnpm docs:typecheck && node scripts/check-docs.mjs",
+    "docs:typecheck": "tsc --project packages/native-epub-kit/tsconfig.docs.json --noEmit",
+    "example:android": "pnpm --filter native-epub-kit-example android",
+    "example:ios": "pnpm --filter native-epub-kit-example ios",
+    "example:prebuild": "pnpm --filter native-epub-kit-example prebuild",
+    "example:start": "pnpm --filter native-epub-kit-example start",
+    "fixtures:build": "pnpm --filter @native-epub-kit/testing fixtures:build",
+    "fixtures:verify": "pnpm --filter @native-epub-kit/testing fixtures:verify",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "licenses:check": "node scripts/check-licenses.mjs",
+    "lint": "eslint apps/example packages/*/src packages/native-epub-kit/app.plugin.js packages/native-epub-kit/plugin packages/testing/contracts packages/testing/helpers packages/testing/scripts scripts --max-warnings=0 && pnpm format:check",
+    "native-pins:check": "node scripts/validate-native-pins.mjs",
+    "qualification:prepare-error-source": "node scripts/prepare-runtime-error-source.mjs",
+    "qualification:selection:android-landscape": "./scripts/qualify-android-landscape-selection.sh",
+    "test": "pnpm native-pins:check && pnpm test:repo && pnpm -r --if-present test",
+    "test:repo": "node --test scripts/*.test.mjs",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "version-packages": "changeset version"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.31.0",
+    "eslint": "9.39.4",
+    "eslint-config-universe": "15.0.3",
+    "prettier": "3.9.5",
+    "typescript": "~6.0.3",
+    "vitest": "4.1.10",
+    "yaml": "2.9.0"
+  },
+  "description": "An open-source native EPUB foundation for Expo and React Native applications, powered by the official Readium Swift and Kotlin toolkits.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bilal-/native-epub-kit.git"
+  },
+  "keywords": [
+    "epub",
+    "expo",
+    "react-native",
+    "readium",
+    "reader"
+  ],
+  "author": "Bilal <bilal-@users.noreply.github.com> (https://github.com/bilal-)",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bilal-/native-epub-kit/issues"
+  },
+  "homepage": "https://github.com/bilal-/native-epub-kit#readme"
+}

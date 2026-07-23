@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-selection-change-event",
+  "recordType": "readerSelectionChangeEvent",
+  "payload": {
+    "generation": 7,
+    "handlesActive": true,
+    "instanceId": "reader-selection-v1",
+    "platform": "ios",
+    "reason": "started",
+    "selection": {
+      "copyAllowed": true,
+      "direction": "rtl",
+      "geometry": {
+        "coordinateSpace": "reader-view-and-window-v1",
+        "viewport": { "width": 390, "height": 612 },
+        "viewRect": { "x": 110, "y": 214, "width": 180, "height": 44 },
+        "windowRect": { "x": 126, "y": 312, "width": 180, "height": 44 },
+        "visibleViewRect": { "x": 110, "y": 214, "width": 180, "height": 44 },
+        "visibleWindowRect": { "x": 126, "y": 312, "width": 180, "height": 44 }
+      },
+      "language": "ur",
+      "locator": {
+        "href": "text/urdu-reading.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "fragments": ["rtl-selection-target"], "progression": 0.125 },
+        "text": {
+          "before": "پہلے ",
+          "highlight": "منطقی انتخاب عبارت بیالیس",
+          "after": " بعد"
+        }
+      },
+      "navigationUnitId": "toc:0:urdu-reading",
+      "text": "منطقی انتخاب عبارت بیالیس",
+      "truncated": false
+    },
+    "sequence": 18
+  }
+}

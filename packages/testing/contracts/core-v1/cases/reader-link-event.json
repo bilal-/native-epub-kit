@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-link-event",
+  "recordType": "readerLinkEvent",
+  "payload": {
+    "instanceId": "reader-core-v1",
+    "generation": 4,
+    "platform": "android",
+    "sourceLocator": {
+      "href": "text/reading.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["external-ref"], "progression": 0.6 }
+    },
+    "href": "https://example.com/nested",
+    "scheme": "https",
+    "contentType": "text/html",
+    "referrer": "text/reading.xhtml",
+    "kind": "external",
+    "disposition": "intercepted",
+    "geometry": {
+      "coordinateSpace": "reader-view-and-window-v1",
+      "viewport": { "width": 412, "height": 732 },
+      "viewRect": { "x": 120, "y": 488, "width": 32, "height": 24 },
+      "windowRect": { "x": 120, "y": 552, "width": 32, "height": 24 }
+    }
+  }
+}

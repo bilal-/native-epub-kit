@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "caseId": "footnote-event",
+  "recordType": "footnoteEvent",
+  "payload": {
+    "id": "note-2",
+    "instanceId": "reader-core-v1",
+    "generation": 4,
+    "platform": "ios",
+    "sourceLocator": {
+      "href": "text/reading.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["note-ref-2"], "progression": 0.4 }
+    },
+    "targetLocator": {
+      "href": "text/notes.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["note-2"] }
+    },
+    "href": "text/notes.xhtml#note-2",
+    "referrer": "text/reading.xhtml",
+    "contentType": "application/xhtml+xml",
+    "html": "<aside epub:type=\"footnote\">A bounded note.</aside>",
+    "text": "A bounded note.",
+    "language": "en",
+    "direction": "ltr",
+    "classification": "semantic",
+    "truncated": false,
+    "geometry": {
+      "coordinateSpace": "reader-view-and-window-v1",
+      "viewport": { "width": 390, "height": 612 },
+      "viewRect": { "x": 240, "y": 312, "width": 24, "height": 22 },
+      "windowRect": { "x": 256, "y": 410, "width": 24, "height": 22 }
+    }
+  }
+}

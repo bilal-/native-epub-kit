@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-decoration",
+  "recordType": "readerDecoration",
+  "payload": {
+    "id": "annotation-0001",
+    "locator": {
+      "href": "text/mixed.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["mixed-selection"], "progression": 0.5 },
+      "text": { "highlight": "English before اردو متن and English after." }
+    },
+    "style": {
+      "type": "custom",
+      "template": "rounded-box-v1",
+      "config": {
+        "borderRadius": 4,
+        "borderWidth": 2,
+        "fillOpacity": 0.12,
+        "isActive": false,
+        "tint": "#c9a227"
+      }
+    },
+    "data": { "publicationId": "fixture:mixed-bidi", "note": null }
+  }
+}

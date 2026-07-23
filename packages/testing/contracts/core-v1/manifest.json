@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "recordTypes": [
+    "publicationSource",
+    "locator",
+    "readerGeometry",
+    "publicationSummary",
+    "navigationUnit",
+    "readerLocationEvent",
+    "readerSelection",
+    "readerSelectionChangeEvent",
+    "readerSelectionActionEvent",
+    "readerDecoration",
+    "readerDecorationActivationEvent",
+    "footnoteEvent",
+    "readerLinkEvent",
+    "readerImageActivationEvent",
+    "readerError"
+  ],
+  "enums": {
+    "publicationSourceKind": ["file", "content", "remote"],
+    "readingProgression": ["ltr", "rtl", "ttb", "btt", "auto"],
+    "publicationLayout": ["reflowable", "fixed"],
+    "progressPrecision": ["continuous", "position", "resource"],
+    "navigationUnitSource": ["toc", "reading-order-fallback"],
+    "readerLocationReason": [
+      "initial",
+      "user-scroll",
+      "user-page-turn",
+      "programmatic",
+      "preference-change",
+      "restored"
+    ],
+    "textDirection": ["ltr", "rtl", "auto"],
+    "decorationStyle": ["highlight", "underline", "margin-icon", "custom"],
+    "footnoteClassification": ["semantic", "heuristic"],
+    "readerLinkKind": ["internal", "external", "unsupported"],
+    "readerLinkDisposition": ["followed", "intercepted", "blocked"],
+    "readerImageSourceKind": ["publication-resource", "inline-svg", "external"],
+    "readerImageUnresolvedReason": [
+      "external-resource",
+      "resource-not-found",
+      "source-too-large",
+      "unsupported-source"
+    ],
+    "readerSelectionChangeReason": ["started", "changed", "cleared", "dismissed"],
+    "platform": ["ios", "android"],
+    "readerErrorCode": [
+      "SOURCE_NOT_FOUND",
+      "SOURCE_PERMISSION_DENIED",
+      "UNSUPPORTED_FORMAT",
+      "PUBLICATION_OPEN_FAILED",
+      "PUBLICATION_PROTECTED",
+      "NAVIGATOR_CREATION_FAILED",
+      "RESOURCE_LOAD_FAILED",
+      "INVALID_LOCATOR",
+      "NAVIGATION_FAILED",
+      "SEARCH_FAILED",
+      "READER_NOT_READY",
+      "READER_DESTROYED",
+      "TYPOGRAPHY_CONFIGURATION_FAILED",
+      "NATIVE_INVARIANT_VIOLATION"
+    ],
+    "readerErrorPhase": ["source", "open", "render", "navigate", "search", "resource", "close"]
+  },
+  "units": {
+    "geometry": "logical-points-ios-density-independent-pixels-android",
+    "progression": "closed-zero-to-one",
+    "position": "one-based-positive-integer",
+    "generation": "zero-based-safe-integer",
+    "sequence": "zero-based-safe-integer"
+  },
+  "nullability": {
+    "optionalFields": "omitted",
+    "locatorTitle": "string-or-null",
+    "jsonExtensionValues": "may-be-null"
+  }
+}

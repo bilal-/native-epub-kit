@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "caseId": "navigation-unit",
+  "recordType": "navigationUnit",
+  "payload": {
+    "id": "toc:0:urdu-reading#part-1",
+    "title": "حصہ اوّل",
+    "href": "text/urdu-reading.xhtml#part-1",
+    "depth": 1,
+    "parentId": "toc:0:urdu-reading",
+    "childIds": [],
+    "source": "toc",
+    "startLocator": {
+      "href": "text/urdu-reading.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["part-1"], "position": 3, "totalProgression": 0.25 }
+    },
+    "endLocator": {
+      "href": "text/urdu-reading.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "fragments": ["part-2"], "position": 6, "totalProgression": 0.5 }
+    },
+    "startPosition": 3,
+    "endPositionExclusive": 6,
+    "startTotalProgression": 0.25,
+    "endTotalProgression": 0.5
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "caseId": "locator-rich",
+  "recordType": "locator",
+  "payload": {
+    "href": "text/chapter-2.xhtml",
+    "type": "application/xhtml+xml",
+    "title": null,
+    "locations": {
+      "fragments": ["section-3"],
+      "progression": 0.375,
+      "totalProgression": 0.421875,
+      "position": 5
+    },
+    "text": {
+      "before": "Text before ",
+      "highlight": "اردو متن",
+      "after": " and text after."
+    }
+  },
+  "expectations": {
+    "requiredJsonPointers": [
+      "/payload/href",
+      "/payload/locations/progression",
+      "/payload/locations/totalProgression",
+      "/payload/text/highlight"
+    ],
+    "explicitNullJsonPointers": ["/payload/title"]
+  }
+}

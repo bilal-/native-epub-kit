@@ -1,0 +1,112 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.bilal.nativeepubkit'
+version = '0.1.0'
+
+def nativeDependencies = new groovy.json.JsonSlurper().parse(file('../native-dependencies.json'))
+def readiumKotlinVersion = nativeDependencies.readiumKotlin.version
+def readiumKotlinRevision = nativeDependencies.readiumKotlin.tagCommit
+def fragmentKtxVersion = nativeDependencies.android.fragmentKtx
+
+android {
+  namespace "com.bilal.nativeepubkit"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+    buildConfigField 'String', 'NATIVE_EPUB_KIT_VERSION', "\"${project.version}\""
+    buildConfigField 'String', 'READIUM_KOTLIN_VERSION', "\"${readiumKotlinVersion}\""
+    buildConfigField 'String', 'READIUM_KOTLIN_REVISION', "\"${readiumKotlinRevision}\""
+    consumerProguardFiles 'consumer-rules.pro'
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation "androidx.fragment:fragment-ktx:${fragmentKtxVersion}"
+  implementation "org.readium.kotlin-toolkit:readium-shared:${readiumKotlinVersion}"
+  implementation "org.readium.kotlin-toolkit:readium-streamer:${readiumKotlinVersion}"
+  implementation "org.readium.kotlin-toolkit:readium-navigator:${readiumKotlinVersion}"
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20260522'
+}
+
+tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+  systemProperty(
+    'nativeEpubKitContractsDir',
+    file("${projectDir}/../../testing/contracts/qualification-v0/cases").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitCoreContractsDir',
+    file("${projectDir}/../../testing/contracts/core-v1").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitLifecycleContract',
+    file("${projectDir}/../../testing/contracts/lifecycle-v0/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitPublicationSessionContract',
+    file("${projectDir}/../../testing/contracts/publication-session-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitReaderApiContract',
+    file("${projectDir}/../../testing/contracts/reader-api-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitPublicationDataContract',
+    file("${projectDir}/../../testing/contracts/publication-data-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitNavigationContract',
+    file("${projectDir}/../../testing/contracts/navigation-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitPreferencesContract',
+    file("${projectDir}/../../testing/contracts/preferences-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitDiagnosticsContract',
+    file("${projectDir}/../../testing/contracts/diagnostics-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitNavigationPolicyContract',
+    file("${projectDir}/../../testing/contracts/navigation-policy-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitNavigationBoundariesContract',
+    file("${projectDir}/../../testing/contracts/navigation-boundaries-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitFontManifestContract',
+    file("${projectDir}/../../testing/contracts/font-manifest-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitTypographyProfileContract',
+    file("${projectDir}/../../testing/contracts/typography-profile-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitFootnoteLinkPolicyContract',
+    file("${projectDir}/../../testing/contracts/footnote-link-policy-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitImagePolicyContract',
+    file("${projectDir}/../../testing/contracts/image-policy-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitSearchPolicyContract',
+    file("${projectDir}/../../testing/contracts/search-policy-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitSelectionActionPolicyContract',
+    file("${projectDir}/../../testing/contracts/selection-action-policy-v1/cases.json").canonicalPath
+  )
+  systemProperty(
+    'nativeEpubKitDecorationPolicyContract',
+    file("${projectDir}/../../testing/contracts/decoration-policy-v1/cases.json").canonicalPath
+  )
+}

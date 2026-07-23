@@ -1,0 +1,79 @@
+{
+  "name": "native-epub-kit",
+  "version": "0.1.0",
+  "description": "Unofficial native EPUB SDK for Expo and React Native, powered by Readium.",
+  "main": "./build/index.node.mjs",
+  "react-native": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "react-native": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "types": "./build/index.node.d.mts",
+      "default": "./build/index.node.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "app.plugin.js",
+    "android/build.gradle",
+    "android/consumer-rules.pro",
+    "android/src/main",
+    "build",
+    "docs",
+    "ios/*.podspec",
+    "ios/readium-podspecs",
+    "ios/*.swift",
+    "native-dependencies.json",
+    "plugin/index.js",
+    "CHANGELOG.md",
+    "expo-module.config.json",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node internal/module_scripts/build.js",
+    "clean": "node internal/module_scripts/clean.js",
+    "lint": "eslint src --max-warnings=0",
+    "prepare": "node internal/module_scripts/prepare.js",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "epub",
+    "expo",
+    "react-native",
+    "readium",
+    "reader"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bilal-/native-epub-kit.git",
+    "directory": "packages/native-epub-kit"
+  },
+  "bugs": {
+    "url": "https://github.com/bilal-/native-epub-kit/issues"
+  },
+  "author": "Bilal <bilal-@users.noreply.github.com> (https://github.com/bilal-)",
+  "license": "MIT",
+  "homepage": "https://github.com/bilal-/native-epub-kit#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.14",
+    "expo": "~56.0.12",
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "typescript": "~6.0.3",
+    "vitest": "4.1.10"
+  },
+  "peerDependencies": {
+    "expo": ">=56.0.0 <57.0.0",
+    "react": ">=19.2.0 <20.0.0",
+    "react-native": ">=0.85.0 <0.86.0"
+  }
+}

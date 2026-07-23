@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "caseId": "publication-outline",
+  "recordType": "publicationOutline",
+  "payload": {
+    "publicationId": "fixture:rtl-custom-font",
+    "language": "ur",
+    "readingProgression": "rtl",
+    "positions": 12,
+    "toc": [
+      {
+        "title": "اردو مطالعہ",
+        "href": "text/urdu-reading.xhtml",
+        "children": [
+          {
+            "title": "حصہ اوّل",
+            "href": "text/urdu-reading.xhtml#part-1",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "Font license",
+        "href": "text/font-license.xhtml",
+        "children": []
+      }
+    ]
+  },
+  "expectations": {
+    "requiredJsonPointers": [
+      "/payload/readingProgression",
+      "/payload/toc/0/title",
+      "/payload/toc/0/children/0/href",
+      "/payload/toc/1/children"
+    ],
+    "explicitNullJsonPointers": []
+  }
+}

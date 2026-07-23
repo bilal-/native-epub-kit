@@ -1,0 +1,65 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*boundary navigation-unit/(continuous|position|resource).*'
+    timeout: 30000
+
+# Commands use canonical unit starts, and TOC/link jumps push one ephemeral
+# source locator that back restores and clear removes.
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*toc top 2 total 6.*reading 2.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*policy scrolled/ltr.*chapter disabled.*boundary navigation-unit/(continuous|position|resource).*'
+    timeout: 30000
+- tapOn:
+    id: 'probe-chapter-progress'
+- extendedWaitUntil:
+    visible: '.*boundary/history 7/7.*first Part one.*next Part two.*return Part one.*history 1→0.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*history 0/64.*'
+    timeout: 10000
+
+# In paginated mode the disabled default rolls back an attempted exact unit
+# crossing and emits current/adjacent state after the rollback succeeds.
+- tapOn:
+    id: 'toggle-navigation-layout'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter disabled.*boundary navigation-unit/(continuous|position|resource).*'
+    timeout: 30000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- swipe:
+    start: '82%,93%'
+    end: '18%,93%'
+    duration: 500
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- extendedWaitUntil:
+    visible: '.*event end/forward/unit Part one→Part two (continuous|position|resource).*'
+    timeout: 15000
+- assertNotVisible: '.*boundary/history error.*'
+- takeScreenshot: navigation-boundaries-history

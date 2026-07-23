@@ -1,0 +1,53 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# The issue-report view is generated only through the redaction-safe stable ref.
+- tapOn:
+    id: 'toggle-preferences'
+- tapOn:
+    id: 'open-diagnostics'
+- assertVisible:
+    id: 'diagnostics-panel'
+- extendedWaitUntil:
+    visible: '.*readium-.*epub reflowable/.*positions [1-9][0-9]*.*fonts valid 2/1.*redaction support-v1.*'
+    timeout: 15000
+- assertVisible: '.*local-file-source:stable/on.*remote-source:unsupported/off.*selection:stable/on.*footnotes:stable/on.*custom-fonts:qualification/on.*decorations:stable/on.*search:planned/on.*diagnostics:stable/on.*'
+- assertNotVisible: '.*file://.*'
+- assertNotVisible: '.*content://.*'
+- assertNotVisible: '.*https://.*'
+- assertNotVisible: '.*/Users/.*'
+- assertNotVisible: '.*must-not-escape.*'
+- takeScreenshot: diagnostics-reflowable-redacted
+- tapOn:
+    id: 'close-diagnostics'
+
+# Fixed layout keeps the manifest diagnostic but disables the active custom-font capability.
+- tapOn:
+    id: 'fixture-fixed'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'toggle-preferences'
+- tapOn:
+    id: 'open-diagnostics'
+- extendedWaitUntil:
+    visible: '.*readium-.*epub fixed/.*fonts valid 2/1.*redaction support-v1.*'
+    timeout: 15000
+- assertVisible: '.*custom-fonts:qualification/off.*diagnostics:stable/on.*'
+- takeScreenshot: diagnostics-fixed-capability

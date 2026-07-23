@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "defaultPositionPageSize": 128,
+  "maximumPositionPageSize": 256,
+  "pageCases": [
+    {
+      "name": "empty",
+      "total": 0,
+      "offset": 0,
+      "limit": null,
+      "expectedOffset": 0,
+      "expectedCount": 0,
+      "expectedNextOffset": null
+    },
+    {
+      "name": "default first page",
+      "total": 500,
+      "offset": 0,
+      "limit": null,
+      "expectedOffset": 0,
+      "expectedCount": 128,
+      "expectedNextOffset": 128
+    },
+    {
+      "name": "maximum limit clamp",
+      "total": 1000,
+      "offset": 128,
+      "limit": 10000,
+      "expectedOffset": 128,
+      "expectedCount": 256,
+      "expectedNextOffset": 384
+    },
+    {
+      "name": "last partial page",
+      "total": 500,
+      "offset": 490,
+      "limit": 128,
+      "expectedOffset": 490,
+      "expectedCount": 10,
+      "expectedNextOffset": null
+    },
+    {
+      "name": "offset clamps to end",
+      "total": 500,
+      "offset": 900,
+      "limit": 20,
+      "expectedOffset": 500,
+      "expectedCount": 0,
+      "expectedNextOffset": null
+    },
+    {
+      "name": "non-positive limit uses default",
+      "total": 500,
+      "offset": -20,
+      "limit": 0,
+      "expectedOffset": 0,
+      "expectedCount": 128,
+      "expectedNextOffset": 128
+    }
+  ],
+  "tocCases": [
+    {
+      "name": "flat complete",
+      "tableOfContents": [
+        { "href": "text/one.xhtml", "children": [] },
+        { "href": "text/two.xhtml", "children": [] }
+      ],
+      "readingOrderHrefs": ["text/one.xhtml", "text/two.xhtml"],
+      "positionCount": 12,
+      "fixedLayout": false,
+      "expectedWarnings": []
+    },
+    {
+      "name": "nested fragments duplicate and incomplete",
+      "tableOfContents": [
+        {
+          "href": "./text/one.xhtml",
+          "children": [
+            { "href": "text/one.xhtml#opening", "children": [] },
+            { "href": "text/one.xhtml#opening", "children": [] }
+          ]
+        },
+        { "href": "text/two.xhtml#part", "children": [] }
+      ],
+      "readingOrderHrefs": ["text/one.xhtml", "text/two.xhtml", "text/unlisted.xhtml"],
+      "positionCount": 40,
+      "fixedLayout": false,
+      "expectedWarnings": ["toc-duplicate-targets", "toc-incomplete"]
+    },
+    {
+      "name": "empty fixed layout without positions",
+      "tableOfContents": [],
+      "readingOrderHrefs": ["page/one.xhtml"],
+      "positionCount": 0,
+      "fixedLayout": true,
+      "expectedWarnings": [
+        "toc-empty",
+        "toc-incomplete",
+        "positions-unavailable",
+        "fixed-layout-preferences-limited"
+      ]
+    }
+  ]
+}

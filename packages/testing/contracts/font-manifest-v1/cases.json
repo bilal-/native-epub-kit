@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "schemaVersion": 1,
+  "maximumFaces": 64,
+  "cases": [
+    {
+      "name": "not-configured",
+      "platform": "ios",
+      "manifest": null,
+      "availableFiles": [],
+      "expected": {
+        "status": "not-configured",
+        "faceCount": 0,
+        "familyCount": 0,
+        "families": []
+      }
+    },
+    {
+      "name": "ios-multiple-faces-and-families",
+      "platform": "ios",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-0-ReaderSerif-Regular.ttf",
+            "path": "NativeEpubKit-0-ReaderSerif-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          },
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-1-ReaderSerif-Bold.ttf",
+            "path": "NativeEpubKit-1-ReaderSerif-Bold.ttf",
+            "style": "normal",
+            "weight": 700
+          },
+          {
+            "family": "Urdu Nastaliq",
+            "file": "NativeEpubKit-2-UrduNastaliq-Italic.otf",
+            "path": "NativeEpubKit-2-UrduNastaliq-Italic.otf",
+            "style": "italic",
+            "weight": 400
+          }
+        ]
+      },
+      "availableFiles": [
+        "NativeEpubKit-0-ReaderSerif-Regular.ttf",
+        "NativeEpubKit-1-ReaderSerif-Bold.ttf",
+        "NativeEpubKit-2-UrduNastaliq-Italic.otf"
+      ],
+      "expected": {
+        "status": "valid",
+        "faceCount": 3,
+        "familyCount": 2,
+        "families": [
+          {
+            "family": "Reader Serif",
+            "faces": [
+              {
+                "file": "NativeEpubKit-0-ReaderSerif-Regular.ttf",
+                "style": "normal",
+                "weight": 400
+              },
+              { "file": "NativeEpubKit-1-ReaderSerif-Bold.ttf", "style": "normal", "weight": 700 }
+            ]
+          },
+          {
+            "family": "Urdu Nastaliq",
+            "faces": [
+              {
+                "file": "NativeEpubKit-2-UrduNastaliq-Italic.otf",
+                "style": "italic",
+                "weight": 400
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "android-multiple-faces-one-family",
+      "platform": "android",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": "Reader Sans",
+            "file": "NativeEpubKit-0-ReaderSans-Regular.ttf",
+            "path": "native_epub_kit/fonts/NativeEpubKit-0-ReaderSans-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          },
+          {
+            "family": "Reader Sans",
+            "file": "NativeEpubKit-1-ReaderSans-Italic.otf",
+            "path": "native_epub_kit/fonts/NativeEpubKit-1-ReaderSans-Italic.otf",
+            "style": "italic",
+            "weight": 400
+          }
+        ]
+      },
+      "availableFiles": [
+        "native_epub_kit/fonts/NativeEpubKit-0-ReaderSans-Regular.ttf",
+        "native_epub_kit/fonts/NativeEpubKit-1-ReaderSans-Italic.otf"
+      ],
+      "expected": {
+        "status": "valid",
+        "faceCount": 2,
+        "familyCount": 1,
+        "families": [
+          {
+            "family": "Reader Sans",
+            "faces": [
+              {
+                "file": "NativeEpubKit-0-ReaderSans-Regular.ttf",
+                "style": "normal",
+                "weight": 400
+              },
+              { "file": "NativeEpubKit-1-ReaderSans-Italic.otf", "style": "italic", "weight": 400 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "invalid-unknown-root-field",
+      "platform": "ios",
+      "manifest": { "schemaVersion": 1, "fonts": [], "source": "/private/font.ttf" },
+      "availableFiles": [],
+      "expected": { "status": "invalid", "faceCount": 0, "familyCount": 0, "families": [] }
+    },
+    {
+      "name": "invalid-duplicate-face",
+      "platform": "ios",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-0-Regular.ttf",
+            "path": "NativeEpubKit-0-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          },
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-1-Regular.ttf",
+            "path": "NativeEpubKit-1-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          }
+        ]
+      },
+      "availableFiles": ["NativeEpubKit-0-Regular.ttf", "NativeEpubKit-1-Regular.ttf"],
+      "expected": { "status": "invalid", "faceCount": 0, "familyCount": 0, "families": [] }
+    },
+    {
+      "name": "invalid-platform-path",
+      "platform": "android",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-0-Regular.ttf",
+            "path": "NativeEpubKit-0-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          }
+        ]
+      },
+      "availableFiles": ["native_epub_kit/fonts/NativeEpubKit-0-Regular.ttf"],
+      "expected": { "status": "invalid", "faceCount": 0, "familyCount": 0, "families": [] }
+    },
+    {
+      "name": "invalid-missing-asset",
+      "platform": "ios",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": "Reader Serif",
+            "file": "NativeEpubKit-0-Regular.ttf",
+            "path": "NativeEpubKit-0-Regular.ttf",
+            "style": "normal",
+            "weight": 400
+          }
+        ]
+      },
+      "availableFiles": [],
+      "expected": { "status": "invalid", "faceCount": 0, "familyCount": 0, "families": [] }
+    },
+    {
+      "name": "invalid-face-fields",
+      "platform": "ios",
+      "manifest": {
+        "schemaVersion": 1,
+        "fonts": [
+          {
+            "family": " Reader Serif ",
+            "file": "NativeEpubKit-0-Regular.TTF",
+            "path": "NativeEpubKit-0-Regular.TTF",
+            "style": "oblique",
+            "weight": 0,
+            "url": "file:///private/font.ttf"
+          }
+        ]
+      },
+      "availableFiles": ["NativeEpubKit-0-Regular.TTF"],
+      "expected": { "status": "invalid", "faceCount": 0, "familyCount": 0, "families": [] }
+    }
+  ]
+}

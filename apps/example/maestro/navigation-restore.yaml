@@ -1,0 +1,79 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*positions [1-9][0-9]*.*chain valid.*'
+    timeout: 30000
+- tapOn:
+    id: 'run-navigation-matrix'
+- extendedWaitUntil:
+    visible: '.*matrix 6/6.*'
+    timeout: 30000
+- tapOn:
+    id: 'invalid-navigation'
+- extendedWaitUntil:
+    visible: '.*invalid navigation INVALID_LOCATOR.*boundary false.*'
+    timeout: 30000
+- tapOn:
+    id: 'arm-restore'
+- extendedWaitUntil:
+    visible: '.*restore armed.*'
+    timeout: 20000
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible:
+    id: 'reader-unmounted'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*restored.*'
+    timeout: 30000
+- tapOn:
+    id: 'verify-restore'
+- extendedWaitUntil:
+    visible: '.*restore verified.*'
+    timeout: 10000
+- tapOn:
+    id: 'typography-hybrid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*preference-change.*'
+    timeout: 30000
+- tapOn:
+    id: 'verify-restore'
+- extendedWaitUntil:
+    visible: '.*restore verified.*'
+    timeout: 10000
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'verify-restore'
+    timeout: 20000
+- tapOn:
+    id: 'verify-restore'
+- extendedWaitUntil:
+    visible: '.*restore verified.*'
+    timeout: 10000
+- takeScreenshot: navigation-restore-complete

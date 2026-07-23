@@ -1,0 +1,68 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# A no-match query returns one terminal empty page. Both the terminal cursor
+# and a consumed non-terminal cursor reject replay, and cancellation is idempotent.
+- tapOn:
+    id: 'run-search-matrix'
+- extendedWaitUntil:
+    visible: '.*Search empty/repeated passed.*terminal replay rejected.*consumed cursor rejected.*'
+    timeout: 30000
+- takeScreenshot: search-empty-and-repeated-cursor
+
+# The common contract passes a bounded BCP 47 language override through both
+# Readium adapters and preserves canonical Urdu locator/excerpt text.
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'run-search-matrix'
+- extendedWaitUntil:
+    visible: '.*Search RTL passed.*language ur.*excerpts bounded.*'
+    timeout: 60000
+- takeScreenshot: search-rtl
+
+# The 2,048-match fixture proves the 2,000-result ceiling, 100-result bridge
+# pages, explicit truncation, isolated decorations, navigation/back, active
+# replacement cancellation, stale-session rejection, and idempotent cleanup.
+- tapOn:
+    id: 'fixture-stress'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'run-search-matrix'
+- extendedWaitUntil:
+    visible: '.*Search large passed.*2,000/2,048.*pages 20.*truncated yes.*groups isolated.*navigation/back yes.*stale rejected.*cancel idempotent.*'
+    timeout: 180000
+- takeScreenshot: search-large-cancel-navigation
+
+# This deliberately invalid EPUB opens its first spine resource, then makes
+# Readium fail while the iterator reads a missing later resource.
+- tapOn:
+    id: 'fixture-searchFailure'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'run-search-matrix'
+- extendedWaitUntil:
+    visible: '.*Search failed-search passed.*SEARCH_FAILED/search.*'
+    timeout: 60000
+- takeScreenshot: search-resource-failure

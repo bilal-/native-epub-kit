@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "caseId": "locator",
+  "recordType": "locator",
+  "payload": {
+    "href": "text/chapter-2.xhtml",
+    "type": "application/xhtml+xml",
+    "title": null,
+    "locations": {
+      "fragments": ["section-3"],
+      "progression": 0.375,
+      "totalProgression": 0.421875,
+      "position": 5,
+      "cssSelector": "#section-3 > p:nth-child(2)",
+      "domRange": {
+        "start": { "cssSelector": "#section-3", "textNodeIndex": 0, "charOffset": 2 },
+        "end": null
+      },
+      "vendorNullable": null
+    },
+    "text": {
+      "before": "Text before ",
+      "highlight": "اردو متن",
+      "after": " and text after.",
+      "language": "ur"
+    },
+    "vendorExtension": {
+      "revision": 7,
+      "nullable": null
+    }
+  }
+}

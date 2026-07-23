@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "caseId": "publication-source",
+  "recordType": "publicationSource",
+  "payload": {
+    "kind": "remote",
+    "url": "https://example.invalid/books/fixture.epub",
+    "headers": {
+      "Authorization": "<redacted>",
+      "X-Reader-Fixture": "core-v1"
+    }
+  }
+}

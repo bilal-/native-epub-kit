@@ -1,0 +1,70 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-stress'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-stress'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# Three independent groups coexist while the annotations group exercises one
+# ordered add/update/remove delta across all four bounded rendering styles.
+- tapOn:
+    id: 'run-decoration-matrix'
+- extendedWaitUntil:
+    visible: '.*Decoration matrix passed.*groups 3.*styles 4.*delta 3.*navigation usable.*'
+    timeout: 60000
+- takeScreenshot: decoration-groups-and-delta
+
+# The first annotation remains activable and returns its group, canonical
+# decoration record, consumer data, and native geometry through the stable event.
+- tapOn:
+    id: 'reader-focus'
+- tapOn: 'Addressable paragraph 0001.'
+- extendedWaitUntil:
+    visible: '.*group annotations.*id annotation-highlight.*style underline.*geometry (view\+window|viewport-only).*activations 1.*'
+    timeout: 30000
+- takeScreenshot: decoration-activation
+- tapOn:
+    id: 'reader-unfocus'
+
+# Recreating the navigator for an immutable chapter-gesture policy change must
+# restore all groups and install exactly one observer for the new navigator.
+- tapOn:
+    id: 'toggle-chapter-gesture'
+- extendedWaitUntil:
+    visible: '.*policy scrolled/ltr.*chapter enabled.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- tapOn: 'Addressable paragraph 0001.'
+- extendedWaitUntil:
+    visible: '.*group annotations.*id annotation-highlight.*style underline.*geometry (view\+window|viewport-only).*activations 2.*'
+    timeout: 30000
+- takeScreenshot: decoration-restored-after-navigator-recreation
+- tapOn:
+    id: 'reader-unfocus'
+
+# The stress proof renders 2,000 real Readium decorations and then navigates to
+# the final and first stable anchors, proving the navigator remains responsive.
+- tapOn:
+    id: 'run-decoration-stress'
+- extendedWaitUntil:
+    visible: '.*2,000-decoration matrix passed.*render [0-9]+ ms.*navigation usable.*total [0-9]+ ms.*'
+    timeout: 180000
+- takeScreenshot: decoration-stress-2000

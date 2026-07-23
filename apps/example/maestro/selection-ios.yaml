@@ -1,0 +1,75 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-rtl'
+    timeout: 20000
+- tapOn:
+    id: 'typography-hybrid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*hybrid.*loaded yes.*marker hybrid.*locator stable.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- setOrientation: PORTRAIT
+- waitForAnimationToEnd
+- longPressOn:
+    point: '65%,36%'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn: 'Highlight'
+- extendedWaitUntil:
+    visible: '.*ios.*highlight.*selection .+.*direction rtl.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- assertVisible: '.*ios.*lifecycle started.*selection active.*handles retained.*'
+- assertVisible:
+    id: 'selection-marker'
+- takeScreenshot: selection-ios-portrait
+- tapOn:
+    id: 'clear-selection'
+- assertNotVisible:
+    id: 'selection-marker'
+- assertVisible: 'Selection action pending'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'
+- setOrientation: LANDSCAPE_LEFT
+- waitForAnimationToEnd
+- longPressOn:
+    point: '75%,71%'
+# After rotation, iOS 26 renders this system-owned menu visually but does not
+# publish its labels in the XCTest accessibility snapshot. Tap the visible
+# second action at its deterministic fixture/device coordinate.
+- tapOn:
+    point: '69%,64%'
+- extendedWaitUntil:
+    visible: '.*ios.*note.*selection [A-Za-z]+.*direction ltr.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- assertVisible: '.*ios.*lifecycle started.*selection active.*handles retained.*'
+- takeScreenshot: selection-ios-landscape
+- setOrientation: PORTRAIT
+- waitForAnimationToEnd
+- tapOn:
+    id: 'clear-selection'
+- assertNotVisible:
+    id: 'selection-marker'
+- assertVisible: 'Selection action pending'
+- assertVisible: '.*ios.*lifecycle cleared.*selection none.*handles released.*'

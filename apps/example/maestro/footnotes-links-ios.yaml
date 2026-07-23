@@ -1,0 +1,194 @@
+appId: com.bilal.nativeepubkit.example
+---
+# iOS exposes EPUB hyperlink actions through their accessibility labels.
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: 'Close'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-footnotes'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-footnotes'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# Semantic same-resource note: native classification cancels default navigation,
+# the React Native sheet receives bounded plain text, and the reading locator stays put.
+- tapOn: 'Open semantic footnote one'
+- extendedWaitUntil:
+    visible:
+      id: 'footnote-sheet'
+    timeout: 10000
+- assertVisible: '.*same-resource note contains formatted text.*'
+- assertVisible: '.*semantic footnote.*reading.xhtml#note-local.*source EPUB/text/reading.xhtml.*target EPUB/text/reading.xhtml.*'
+- extendedWaitUntil:
+    visible: '.*stability stable after 350 ms.*'
+    timeout: 10000
+- takeScreenshot: same-resource-footnote
+
+# Semantic cross-resource note: the target is resolved without moving the navigator.
+- tapOn:
+    id: 'close-footnote'
+- tapOn: 'Open semantic footnote two'
+- extendedWaitUntil:
+    visible:
+      id: 'footnote-sheet'
+    timeout: 10000
+- assertVisible: '.*note lives in a separate XHTML resource.*nested link.*'
+- assertVisible: '.*semantic footnote.*notes.xhtml#note-cross.*source EPUB/text/reading.xhtml.*target EPUB/text/notes.xhtml.*'
+- extendedWaitUntil:
+    visible: '.*stability stable after 350 ms.*'
+    timeout: 10000
+- takeScreenshot: cross-resource-footnote
+
+# A malformed publisher note is classified only in opt-in heuristic mode. The
+# native adapter resolves its bounded multi-paragraph target content itself.
+- tapOn:
+    id: 'close-footnote'
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible: 'Remount'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn: 'Open heuristic legacy note'
+- extendedWaitUntil:
+    visible:
+      id: 'footnote-sheet'
+    timeout: 10000
+- assertVisible: '.*Legacy heuristic content keeps multiple paragraphs.*'
+- assertVisible: '.*heuristic footnote.*notes.xhtml#note-legacy.*id note-legacy.*language ur.*direction rtl.*html bounded.*truncated no.*'
+- extendedWaitUntil:
+    visible: '.*stability stable after 350 ms.*'
+    timeout: 10000
+- takeScreenshot: heuristic-rtl-footnote
+
+# The synchronous consumer classifier can downgrade an already-prevented note
+# candidate. The wrapper then uses its resolved locator and records navigation.
+- tapOn:
+    id: 'close-footnote'
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible: 'Remount'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn: 'Follow consumer classified destination'
+- extendedWaitUntil:
+    visible: '.*internal link.*followed.*reading.xhtml#consumer-navigate.*'
+    timeout: 10000
+- assertNotVisible:
+    id: 'footnote-sheet'
+- assertVisible: 'Consumer classifier destination'
+
+# Remount between independent hyperlink checks because WKWebView may retain
+# accessibility focus on the previously activated note even though navigation is stable.
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible: 'Remount'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# An ordinary internal hyperlink follows Readium's default navigation path and is
+# never surfaced as a semantic footnote.
+- tapOn: 'Follow ordinary internal destination'
+- extendedWaitUntil:
+    visible: '.*internal link.*followed.*ordinary.xhtml#ordinary-target.*source EPUB/text/reading.xhtml.*target EPUB/text/ordinary.xhtml.*'
+    timeout: 10000
+- assertNotVisible:
+    id: 'footnote-sheet'
+- extendedWaitUntil:
+    visible: 'Ordinary internal destination'
+    timeout: 10000
+- takeScreenshot: ordinary-internal-link
+
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible: 'Remount'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# External URLs are reported to the host without launching another application.
+- tapOn:
+    text: 'Open external reference'
+- extendedWaitUntil:
+    visible: '.*external link.*intercepted.*https://example.com/reference.*source EPUB/text/reading.xhtml.*target none.*'
+    timeout: 10000
+- assertNotVisible:
+    id: 'footnote-sheet'
+- assertVisible: 'Reading with notes'
+- takeScreenshot: external-link-policy
+
+# Mail is outside the configured HTTPS allowlist and remains observable but blocked.
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible: 'Remount'
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn: 'Open unsupported mail link'
+- extendedWaitUntil:
+    visible: '.*unsupported link.*blocked.*mailto:reader@example.com.*scheme mailto.*'
+    timeout: 10000
+- assertVisible: 'Reading with notes'
+- takeScreenshot: unsupported-scheme-policy

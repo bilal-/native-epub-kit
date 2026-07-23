@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "caseId": "location-event",
+  "recordType": "locationEvent",
+  "payload": {
+    "publicationId": "fixture:minimal-en",
+    "locator": {
+      "href": "text/chapter-1.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": {
+        "progression": 0,
+        "totalProgression": 0
+      }
+    },
+    "reason": "userScroll",
+    "precision": "resource",
+    "navigationUnitId": null,
+    "sequence": 17,
+    "isAtStart": true,
+    "isAtEnd": false
+  },
+  "expectations": {
+    "requiredJsonPointers": [
+      "/payload/locator/locations/progression",
+      "/payload/reason",
+      "/payload/precision",
+      "/payload/sequence",
+      "/payload/isAtStart",
+      "/payload/isAtEnd"
+    ],
+    "explicitNullJsonPointers": ["/payload/navigationUnitId"]
+  }
+}

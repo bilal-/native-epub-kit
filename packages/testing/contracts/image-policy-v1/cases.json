@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "defaults": { "allowSharing": false, "allowZoom": true },
+  "cases": [
+    {
+      "name": "defaults",
+      "policy": null,
+      "expected": { "allowSharing": false, "allowZoom": true },
+      "uses": { "share": false, "zoom": true }
+    },
+    {
+      "name": "both-allowed",
+      "policy": { "allowSharing": true, "allowZoom": true },
+      "expected": { "allowSharing": true, "allowZoom": true },
+      "uses": { "share": true, "zoom": true }
+    },
+    {
+      "name": "sharing-only",
+      "policy": { "allowSharing": true, "allowZoom": false },
+      "expected": { "allowSharing": true, "allowZoom": false },
+      "uses": { "share": true, "zoom": false }
+    },
+    {
+      "name": "unknown-field",
+      "policy": { "allowZoom": true, "network": true },
+      "expectedError": true
+    },
+    {
+      "name": "invalid-type",
+      "policy": { "allowSharing": "yes" },
+      "expectedError": true
+    }
+  ]
+}

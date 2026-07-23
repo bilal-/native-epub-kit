@@ -1,0 +1,76 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*precision.*'
+    timeout: 20000
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: 'Probe ✓'
+    timeout: 10000
+- tapOn:
+    id: 'source-closed'
+- extendedWaitUntil:
+    visible: '.*idle.*owned 0.*emissions 1.*'
+    timeout: 10000
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: 'Probe !'
+    timeout: 10000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*precision.*'
+    timeout: 20000
+- tapOn:
+    id: 'toggle-reader'
+- assertVisible:
+    id: 'reader-unmounted'
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: 'Probe ×'
+    timeout: 10000
+- tapOn:
+    id: 'toggle-reader'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*precision.*'
+    timeout: 20000
+- tapOn:
+    id: 'probe-progress'
+- extendedWaitUntil:
+    visible: 'Probe ✓'
+    timeout: 10000
+- tapOn:
+    id: 'source-remote'
+- extendedWaitUntil:
+    visible: '.*error.*UNSUPPORTED_FORMAT.*source.*owned 0.*emissions 1.*'
+    timeout: 10000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- takeScreenshot: stable-api-source-events-commands

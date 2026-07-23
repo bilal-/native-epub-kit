@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bilal-/native-epub-kit/blob/main/packages/testing/contracts/core-v1/schema.json",
+  "title": "Native EPUB Kit core-v1 golden record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "caseId", "recordType", "payload"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "caseId": { "type": "string", "minLength": 1 },
+    "recordType": {
+      "enum": [
+        "publicationSource",
+        "locator",
+        "readerGeometry",
+        "publicationSummary",
+        "navigationUnit",
+        "readerLocationEvent",
+        "readerSelection",
+        "readerSelectionChangeEvent",
+        "readerSelectionActionEvent",
+        "readerDecoration",
+        "readerDecorationActivationEvent",
+        "footnoteEvent",
+        "readerLinkEvent",
+        "readerImageActivationEvent",
+        "readerError"
+      ]
+    },
+    "payload": { "type": "object" }
+  }
+}

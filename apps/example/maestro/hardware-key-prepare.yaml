@@ -1,0 +1,55 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: 'Close'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'toggle-navigation-layout'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter disabled.*keys on.*suppressed no.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'toggle-chapter-gesture'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*chapter enabled.*keys on.*suppressed no.*'
+    timeout: 30000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- tapOn:
+    point: '50%,70%'

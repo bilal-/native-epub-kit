@@ -1,0 +1,103 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# Stable callbacks opt into the same top-level policy as getNavigationUnits().
+# The precision remains platform-honest while unit/chapter/overall fields are
+# always present after the coherent publication/position snapshot is ready.
+- extendedWaitUntil:
+    visible: '.*reader progress top-level.*unit First chapter.*chapter [0-9.]+.*overall [0-9.]+.*precision (continuous|position|resource).*current [0-9.]+.*furthest [0-9.]+.*'
+    timeout: 30000
+
+# Advance within the first chapter, then explicitly arm the material-stability
+# checkpoint at the new current location.
+- swipe:
+    start: '50%,84%'
+    end: '50%,60%'
+    duration: 700
+- extendedWaitUntil:
+    visible: '.*reader progress top-level.*unit First chapter.*current [0-9.]+.*furthest [0-9.]+.*'
+    timeout: 15000
+- tapOn:
+    id: 'probe-chapter-progress'
+- extendedWaitUntil:
+    visible: '.*progress anchor armed.*First chapter.*'
+    timeout: 10000
+
+# Recreate viewport geometry in both orientations. The public comparator allows
+# at most one canonical position of reflow drift and requires the same unit and
+# resource.
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*'
+    timeout: 15000
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*reader progress top-level.*unit First chapter.*'
+    timeout: 15000
+- tapOn:
+    id: 'probe-chapter-progress'
+- extendedWaitUntil:
+    visible: '.*progress anchor stable yes.*'
+    timeout: 10000
+
+# Theme, font, layout, publisher-style, margins, alignment, and line-height
+# update together. Progress anchors must remain materially stable across the
+# resulting Readium reflow.
+- tapOn:
+    id: 'toggle-preferences'
+- tapOn:
+    id: 'preferences-profile'
+- extendedWaitUntil:
+    visible: '.*preference progress stable yes.*'
+    timeout: 30000
+- tapOn:
+    id: 'preferences-font-size'
+- extendedWaitUntil:
+    visible: '.*preference progress stable yes.*'
+    timeout: 30000
+- tapOn:
+    id: 'close-preferences'
+
+# Moving into the next resource changes current progress, while the controller's
+# overall furthest checkpoint remains monotonic.
+- tapOn:
+    id: 'next-resource'
+- extendedWaitUntil:
+    visible: '.*reader progress top-level.*unit Second chapter.*chapter [0-9.]+.*overall [0-9.]+.*current [0-9.]+.*furthest [0-9.]+.*'
+    timeout: 30000
+- assertNotVisible: '.*Reader progress pending.*'
+- assertNotVisible: '.*progress raw fallback.*'
+- takeScreenshot: reader-progress-ltr
+
+# The same shared calculation must enrich a right-to-left publication without
+# reversing the publication's canonical reading-order intervals.
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*reader progress top-level.*unit اردو مطالعہ.*chapter [0-9.]+.*overall [0-9.]+.*precision (continuous|position|resource).*'
+    timeout: 30000
+- tapOn:
+    id: 'probe-chapter-progress'
+- extendedWaitUntil:
+    visible: '.*progress anchor armed.*اردو مطالعہ.*'
+    timeout: 10000
+- assertNotVisible: '.*progress raw fallback.*'
+- takeScreenshot: reader-progress-rtl

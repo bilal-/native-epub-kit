@@ -1,0 +1,124 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- launchApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-rtl'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'typography-preserve'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'typography-hybrid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*hybrid.*loaded yes.*marker hybrid.*locator stable.*'
+    timeout: 30000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+
+# Two custom actions fit the Android floating toolbar directly.
+- longPressOn:
+    point: '65%,39%'
+- extendedWaitUntil:
+    visible: 'Note'
+    timeout: 10000
+- tapOn: 'Note'
+- extendedWaitUntil:
+    visible: '.*android.*note.*selection .+.*direction rtl.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- assertVisible:
+    id: 'selection-marker'
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*android.*lifecycle cleared.*selection none.*handles released.*'
+
+# Remaining configured and system actions stay available in native overflow.
+- longPressOn:
+    point: '65%,39%'
+- extendedWaitUntil:
+    visible: 'Copy'
+    timeout: 10000
+- extendedWaitUntil:
+    visible: 'More options'
+    timeout: 10000
+- tapOn: 'More options'
+- extendedWaitUntil:
+    visible: 'Share Quote'
+    timeout: 10000
+- tapOn: 'Share Quote'
+- extendedWaitUntil:
+    visible: '.*android.*share.*selection .+.*direction rtl.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+# Android's system-owned overflow remains above the host after the action. The
+# action payload proves handles were retained; a subsequent reader tap is a
+# native dismissal and is reported distinctly from the explicit clear path.
+- tapOn:
+    point: '20%,80%'
+- extendedWaitUntil:
+    visible: '.*android.*lifecycle dismissed.*selection none.*handles released.*'
+    timeout: 10000
+
+# Readium replaces WebView's default callback when custom actions are supplied;
+# the SDK restores rights-accounted native Copy explicitly.
+- longPressOn:
+    point: '65%,39%'
+- extendedWaitUntil:
+    visible: 'Copy'
+    timeout: 10000
+- tapOn: 'Copy'
+- extendedWaitUntil:
+    visible: '.*android.*lifecycle dismissed.*selection none.*handles released.*'
+    timeout: 10000
+- assertVisible: 'Selection action pending'
+
+# The same menu preserves logical English order and direction without a guessed language.
+- longPressOn:
+    text: 'English profile sample with a stable locator and selectable range.'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn: 'Highlight'
+- extendedWaitUntil:
+    visible: '.*android.*highlight.*selection [A-Za-z]+.*direction ltr.*language none.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- tapOn:
+    id: 'clear-selection'
+- assertVisible: '.*android.*lifecycle cleared.*selection none.*handles released.*'
+
+# Tapping outside the WebView reports native dismissal rather than command clear.
+- longPressOn:
+    point: '65%,39%'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn:
+    point: '20%,80%'
+- extendedWaitUntil:
+    visible: '.*android.*lifecycle dismissed.*selection none.*handles released.*'
+    timeout: 10000
+- assertVisible: 'Selection action pending'
+- takeScreenshot: selection-actions-android

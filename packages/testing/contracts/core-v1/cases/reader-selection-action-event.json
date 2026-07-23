@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-selection-action-event",
+  "recordType": "readerSelectionActionEvent",
+  "payload": {
+    "actionId": "share",
+    "generation": 7,
+    "handlesActive": true,
+    "instanceId": "reader-selection-v1",
+    "platform": "android",
+    "selection": {
+      "copyAllowed": true,
+      "direction": "rtl",
+      "geometry": {
+        "coordinateSpace": "reader-view-and-window-v1",
+        "viewport": { "width": 390, "height": 612 },
+        "viewRect": { "x": 110, "y": -12, "width": 180, "height": 44 },
+        "windowRect": { "x": 126, "y": 86, "width": 180, "height": 44 },
+        "visibleViewRect": { "x": 110, "y": 0, "width": 180, "height": 32 },
+        "visibleWindowRect": { "x": 126, "y": 98, "width": 180, "height": 32 }
+      },
+      "language": "ur",
+      "locator": {
+        "href": "text/urdu-reading.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "fragments": ["rtl-selection-target"], "progression": 0.125 },
+        "text": { "highlight": "مطالعہ" }
+      },
+      "text": "مطالعہ",
+      "truncated": false
+    },
+    "sequence": 19
+  }
+}

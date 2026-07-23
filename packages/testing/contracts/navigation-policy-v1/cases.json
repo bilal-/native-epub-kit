@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "defaults": {
+    "animatedTransitions": false,
+    "chapterTurnGesture": "disabled",
+    "edgeTapNavigation": false,
+    "hardwareKeyNavigation": true,
+    "inputSuppressed": false,
+    "pageTurnGesture": "enabled"
+  },
+  "horizontalDirectionCases": [
+    { "action": "go-right", "progression": "ltr", "expected": "forward" },
+    { "action": "go-left", "progression": "ltr", "expected": "backward" },
+    { "action": "go-right", "progression": "rtl", "expected": "backward" },
+    { "action": "go-left", "progression": "rtl", "expected": "forward" }
+  ],
+  "decisionCases": [
+    {
+      "name": "default scrolled swipe cannot turn a chapter",
+      "policy": {},
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "swipe",
+        "layout": "scrolled"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "forward",
+        "movement": "chapter",
+        "reason": "chapter-turn-disabled"
+      }
+    },
+    {
+      "name": "enabled scrolled swipe turns a chapter",
+      "policy": { "animatedTransitions": true, "chapterTurnGesture": "enabled" },
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "swipe",
+        "layout": "scrolled"
+      },
+      "expected": {
+        "action": "navigate",
+        "animated": true,
+        "direction": "forward",
+        "movement": "chapter",
+        "reason": "allowed"
+      }
+    },
+    {
+      "name": "default paginated swipe turns a page",
+      "policy": {},
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "swipe",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "navigate",
+        "animated": false,
+        "direction": "forward",
+        "movement": "page",
+        "reason": "allowed"
+      }
+    },
+    {
+      "name": "disabled paginated page swipe is ignored",
+      "policy": { "pageTurnGesture": "disabled" },
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "backward",
+        "input": "swipe",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "backward",
+        "movement": "page",
+        "reason": "page-turn-disabled"
+      }
+    },
+    {
+      "name": "paginated boundary uses chapter policy",
+      "policy": { "pageTurnGesture": "enabled" },
+      "input": {
+        "atChapterBoundary": true,
+        "direction": "forward",
+        "input": "swipe",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "forward",
+        "movement": "chapter",
+        "reason": "chapter-turn-disabled"
+      }
+    },
+    {
+      "name": "disabled edge tap is ignored before movement",
+      "policy": { "chapterTurnGesture": "enabled" },
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "edge-tap",
+        "layout": "scrolled"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "forward",
+        "movement": "chapter",
+        "reason": "edge-taps-disabled"
+      }
+    },
+    {
+      "name": "enabled edge tap turns a paginated page",
+      "policy": { "edgeTapNavigation": true },
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "edge-tap",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "navigate",
+        "animated": false,
+        "direction": "forward",
+        "movement": "page",
+        "reason": "allowed"
+      }
+    },
+    {
+      "name": "hardware key is enabled by default",
+      "policy": {},
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "forward",
+        "input": "hardware-key",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "navigate",
+        "animated": false,
+        "direction": "forward",
+        "movement": "page",
+        "reason": "allowed"
+      }
+    },
+    {
+      "name": "disabled hardware key is ignored",
+      "policy": { "hardwareKeyNavigation": false },
+      "input": {
+        "atChapterBoundary": false,
+        "direction": "backward",
+        "input": "hardware-key",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "backward",
+        "movement": "page",
+        "reason": "hardware-keys-disabled"
+      }
+    },
+    {
+      "name": "suppression wins over every input setting",
+      "policy": {
+        "chapterTurnGesture": "enabled",
+        "edgeTapNavigation": true,
+        "inputSuppressed": true
+      },
+      "input": {
+        "atChapterBoundary": true,
+        "direction": "forward",
+        "input": "edge-tap",
+        "layout": "paginated"
+      },
+      "expected": {
+        "action": "ignore",
+        "animated": false,
+        "direction": "forward",
+        "movement": "chapter",
+        "reason": "input-suppressed"
+      }
+    }
+  ]
+}

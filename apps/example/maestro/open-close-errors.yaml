@@ -1,0 +1,95 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'source-valid'
+    timeout: 20000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-missing'
+- extendedWaitUntil:
+    visible: '.*error.*SOURCE_NOT_FOUND.*owned 0.*emissions 1.*'
+    timeout: 10000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-corrupt'
+- extendedWaitUntil:
+    visible: '.*error.*PUBLICATION_OPEN_FAILED.*owned 0.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-unsupported'
+- extendedWaitUntil:
+    visible: '.*error.*UNSUPPORTED_FORMAT.*owned 0.*emissions 1.*'
+    timeout: 10000
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-unreadable'
+- extendedWaitUntil:
+    visible: '.*error.*SOURCE_PERMISSION_DENIED.*owned 0.*emissions 1.*'
+    timeout: 10000
+- takeScreenshot: unreadable-error
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-closed'
+- extendedWaitUntil:
+    visible: '.*idle.*owned 0.*emissions 1.*'
+    timeout: 10000
+- takeScreenshot: closed-idle
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'source-corrupt'
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- repeat:
+    times: 5
+    commands:
+      - tapOn:
+          id: 'source-closed'
+      - extendedWaitUntil:
+          visible: '.*idle.*owned 0.*emissions 1.*'
+          timeout: 10000
+      - tapOn:
+          id: 'source-valid'
+      - extendedWaitUntil:
+          visible: '.*ready.*owned 1.*emissions 1.*'
+          timeout: 20000
+- takeScreenshot: open-close-errors-complete

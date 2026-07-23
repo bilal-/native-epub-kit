@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "caseId": "annotation",
+  "recordType": "annotation",
+  "payload": {
+    "id": "annotation-0001",
+    "publicationId": "fixture:mixed-bidi",
+    "locator": {
+      "href": "text/mixed.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": {
+        "fragments": ["mixed-selection"],
+        "progression": 0.5
+      },
+      "text": {
+        "highlight": "English before اردو متن and English after."
+      }
+    },
+    "style": "highlight",
+    "tint": "#C9A227",
+    "note": null,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "expectations": {
+    "requiredJsonPointers": [
+      "/payload/id",
+      "/payload/locator/locations/progression",
+      "/payload/locator/text/highlight",
+      "/payload/style",
+      "/payload/tint"
+    ],
+    "explicitNullJsonPointers": ["/payload/note"]
+  }
+}

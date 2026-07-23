@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-location-event",
+  "recordType": "readerLocationEvent",
+  "payload": {
+    "instanceId": "reader-core-v1",
+    "generation": 4,
+    "sequence": 19,
+    "locator": {
+      "href": "text/chapter-2.xhtml",
+      "type": "application/xhtml+xml",
+      "locations": { "progression": 0.375, "totalProgression": 0.421875, "position": 5 }
+    },
+    "visibleRange": {
+      "start": {
+        "href": "text/chapter-2.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "progression": 0.35, "totalProgression": 0.4, "position": 5 }
+      },
+      "end": {
+        "href": "text/chapter-2.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "progression": 0.45, "totalProgression": 0.46, "position": 6 }
+      }
+    },
+    "chapterProgress": 0.5,
+    "overallProgress": 0.421875,
+    "position": 5,
+    "totalPositions": 12,
+    "reason": "preference-change",
+    "precision": "continuous"
+  }
+}

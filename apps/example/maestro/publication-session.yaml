@@ -1,0 +1,56 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*session active 1.*assets 0.*publications 1.*violations 0.*high-water 1/1/1.*'
+    timeout: 10000
+- repeat:
+    times: 19
+    commands:
+      - tapOn:
+          id: 'source-closed'
+      - extendedWaitUntil:
+          visible: '.*idle.*owned 0.*emissions 1.*'
+          timeout: 10000
+      - extendedWaitUntil:
+          visible: '.*session active 0.*assets 0.*publications 0.*violations 0.*'
+          timeout: 10000
+      - tapOn:
+          id: 'source-valid'
+      - extendedWaitUntil:
+          visible: '.*ready.*owned 1.*emissions 1.*'
+          timeout: 20000
+      - extendedWaitUntil:
+          visible: '.*session active 1.*assets 0.*publications 1.*violations 0.*high-water 1/1/1.*'
+          timeout: 10000
+- tapOn:
+    id: 'source-closed'
+- extendedWaitUntil:
+    visible: '.*idle.*owned 0.*emissions 1.*'
+    timeout: 10000
+- extendedWaitUntil:
+    visible: '.*session active 0.*assets 0.*publications 0.*closed 20.*violations 0.*high-water 1/1/1.*memory 20.*bounded yes.*'
+    timeout: 10000
+- takeScreenshot: publication-session-twenty-cycles-closed
+- tapOn:
+    id: 'source-valid'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '.*session active 1.*assets 0.*publications 1.*closed 20.*violations 0.*high-water 1/1/1.*bounded yes.*'
+    timeout: 10000
+- takeScreenshot: publication-session-recovered

@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "maximumHeuristicRules": 16,
+  "maximumExternalSchemes": 16,
+  "footnoteCases": [
+    {
+      "name": "default-semantic-note",
+      "policy": null,
+      "href": "reading.xhtml#note-local",
+      "semantic": true,
+      "expectedPolicy": { "mode": "semantic", "heuristicRules": [] },
+      "expectedDecision": { "decision": "emit", "classification": "semantic" }
+    },
+    {
+      "name": "default-ordinary-link",
+      "policy": null,
+      "href": "ordinary.xhtml#target",
+      "semantic": false,
+      "expectedPolicy": { "mode": "semantic", "heuristicRules": [] },
+      "expectedDecision": { "decision": "navigate" }
+    },
+    {
+      "name": "navigate-mode-does-not-intercept-semantic-note",
+      "policy": { "mode": "navigate" },
+      "href": "reading.xhtml#note-local",
+      "semantic": true,
+      "expectedPolicy": { "mode": "navigate", "heuristicRules": [] },
+      "expectedDecision": { "decision": "navigate" }
+    },
+    {
+      "name": "conservative-cross-resource-heuristic",
+      "policy": { "mode": "semantic-and-heuristic" },
+      "href": "notes.xhtml#note-legacy",
+      "semantic": false,
+      "expectedPolicy": { "mode": "semantic-and-heuristic", "heuristicRules": [] },
+      "expectedDecision": { "decision": "emit", "classification": "heuristic" }
+    },
+    {
+      "name": "simple-same-resource-fragment-is-not-a-heuristic-note",
+      "policy": { "mode": "semantic-and-heuristic" },
+      "href": "reading.xhtml#note-legacy",
+      "semantic": false,
+      "expectedPolicy": { "mode": "semantic-and-heuristic", "heuristicRules": [] },
+      "expectedDecision": { "decision": "navigate" }
+    },
+    {
+      "name": "consumer-declarative-rule",
+      "policy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": [
+          {
+            "id": "publisher-endnotes",
+            "resourceSuffix": "appendix.xhtml",
+            "fragmentPrefix": "endnote-",
+            "fragmentSuffix": "-body"
+          }
+        ]
+      },
+      "href": "text/appendix.xhtml?edition=1#endnote-12-body",
+      "semantic": false,
+      "expectedPolicy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": [
+          {
+            "id": "publisher-endnotes",
+            "resourceSuffix": "appendix.xhtml",
+            "fragmentPrefix": "endnote-",
+            "fragmentSuffix": "-body"
+          }
+        ]
+      },
+      "expectedDecision": {
+        "decision": "emit",
+        "classification": "heuristic",
+        "ruleId": "publisher-endnotes"
+      }
+    },
+    {
+      "name": "duplicate-rule-id-is-invalid",
+      "policy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": [
+          { "id": "duplicate", "fragmentPrefix": "fn-" },
+          { "id": "duplicate", "resourceSuffix": "notes.xhtml" }
+        ]
+      },
+      "href": "notes.xhtml#fn-1",
+      "semantic": false,
+      "expectedError": true
+    },
+    {
+      "name": "raw-pattern-field-is-invalid",
+      "policy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": [{ "id": "unsafe", "pattern": ".*note.*" }]
+      },
+      "href": "reading.xhtml#note",
+      "semantic": false,
+      "expectedError": true
+    }
+  ],
+  "linkCases": [
+    {
+      "name": "default-https-is-intercepted",
+      "policy": null,
+      "href": "https://example.com/path",
+      "expectedPolicy": {
+        "allowedExternalSchemes": ["http", "https"],
+        "externalLinks": "intercept",
+        "unsupportedSchemes": "block"
+      },
+      "expectedDecision": {
+        "kind": "external",
+        "disposition": "intercepted",
+        "scheme": "https"
+      }
+    },
+    {
+      "name": "default-mailto-is-blocked",
+      "policy": null,
+      "href": "mailto:reader@example.com",
+      "expectedPolicy": {
+        "allowedExternalSchemes": ["http", "https"],
+        "externalLinks": "intercept",
+        "unsupportedSchemes": "block"
+      },
+      "expectedDecision": {
+        "kind": "unsupported",
+        "disposition": "blocked",
+        "scheme": "mailto"
+      }
+    },
+    {
+      "name": "consumer-allows-normalized-mailto",
+      "policy": {
+        "allowedExternalSchemes": ["HTTPS", " mailto "],
+        "externalLinks": "intercept",
+        "unsupportedSchemes": "block"
+      },
+      "href": "MAILTO:reader@example.com",
+      "expectedPolicy": {
+        "allowedExternalSchemes": ["https", "mailto"],
+        "externalLinks": "intercept",
+        "unsupportedSchemes": "block"
+      },
+      "expectedDecision": {
+        "kind": "external",
+        "disposition": "intercepted",
+        "scheme": "mailto"
+      }
+    },
+    {
+      "name": "supported-external-can-be-blocked",
+      "policy": { "externalLinks": "block" },
+      "href": "https://example.com/path",
+      "expectedPolicy": {
+        "allowedExternalSchemes": ["http", "https"],
+        "externalLinks": "block",
+        "unsupportedSchemes": "block"
+      },
+      "expectedDecision": { "kind": "external", "disposition": "blocked", "scheme": "https" }
+    },
+    {
+      "name": "unsupported-custom-scheme-can-be-intercepted",
+      "policy": { "unsupportedSchemes": "intercept" },
+      "href": "reader-action:open?id=1",
+      "expectedPolicy": {
+        "allowedExternalSchemes": ["http", "https"],
+        "externalLinks": "intercept",
+        "unsupportedSchemes": "intercept"
+      },
+      "expectedDecision": {
+        "kind": "unsupported",
+        "disposition": "intercepted",
+        "scheme": "reader-action"
+      }
+    },
+    {
+      "name": "duplicate-scheme-is-invalid",
+      "policy": { "allowedExternalSchemes": ["HTTPS", "https"] },
+      "href": "https://example.com",
+      "expectedError": true
+    },
+    {
+      "name": "scheme-with-colon-is-invalid",
+      "policy": { "allowedExternalSchemes": ["https:"] },
+      "href": "https://example.com",
+      "expectedError": true
+    }
+  ]
+}

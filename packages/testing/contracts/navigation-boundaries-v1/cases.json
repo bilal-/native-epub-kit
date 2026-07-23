@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "maximumHistoryEntries": 64,
+  "boundaryCases": [
+    {
+      "name": "continuous midpoint selects first unit",
+      "precision": "continuous",
+      "location": {
+        "href": "text/a.xhtml",
+        "locations": { "position": 2, "totalProgression": 0.25 },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "a", "precision": "continuous" }
+    },
+    {
+      "name": "continuous next start is inclusive",
+      "precision": "continuous",
+      "location": {
+        "href": "text/b.xhtml",
+        "locations": { "position": 3, "totalProgression": 0.5 },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "b", "precision": "continuous" }
+    },
+    {
+      "name": "position fallback selects second unit",
+      "precision": "position",
+      "location": {
+        "href": "text/b.xhtml",
+        "locations": { "position": 4, "totalProgression": 0.75 },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "b", "precision": "position" }
+    },
+    {
+      "name": "exact fragment selects same-resource unit",
+      "precision": "resource",
+      "location": {
+        "href": "text/shared.xhtml",
+        "locations": { "fragments": ["second"] },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "shared-second", "precision": "resource" }
+    },
+    {
+      "name": "ambiguous resource retains accepted unit",
+      "precision": "resource",
+      "preferredUnitId": "shared-second",
+      "location": {
+        "href": "text/shared.xhtml",
+        "locations": { "progression": 0.5 },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "shared-second", "precision": "resource" }
+    },
+    {
+      "name": "publication end belongs to final unit",
+      "precision": "continuous",
+      "location": {
+        "href": "text/b.xhtml",
+        "locations": { "position": 4, "totalProgression": 1 },
+        "type": "application/xhtml+xml"
+      },
+      "expected": { "unitId": "b", "precision": "continuous" }
+    }
+  ],
+  "units": [
+    {
+      "endPositionExclusive": 3,
+      "endTotalProgression": 0.5,
+      "href": "text/a.xhtml",
+      "id": "a",
+      "startPosition": 1,
+      "startTotalProgression": 0
+    },
+    {
+      "endPositionExclusive": 5,
+      "endTotalProgression": 1,
+      "href": "text/b.xhtml",
+      "id": "b",
+      "startPosition": 3,
+      "startTotalProgression": 0.5
+    },
+    {
+      "href": "text/shared.xhtml#first",
+      "id": "shared-first"
+    },
+    {
+      "href": "text/shared.xhtml#second",
+      "id": "shared-second"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-geometry",
+  "recordType": "readerGeometry",
+  "payload": {
+    "coordinateSpace": "reader-view-and-window-v1",
+    "viewport": { "width": 390, "height": 612 },
+    "viewRect": { "x": 34.25, "y": 188.5, "width": 121.75, "height": 42 },
+    "windowRect": { "x": 50.25, "y": 286.5, "width": 121.75, "height": 42 },
+    "visibleViewRect": { "x": 34.25, "y": 188.5, "width": 121.75, "height": 42 },
+    "visibleWindowRect": { "x": 50.25, "y": 286.5, "width": 121.75, "height": 42 }
+  }
+}

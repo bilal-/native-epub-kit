@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-error",
+  "recordType": "readerError",
+  "payload": {
+    "code": "INVALID_LOCATOR",
+    "phase": "navigate",
+    "message": "The locator could not be resolved.",
+    "recoverable": true,
+    "publicationUri": "file:///redacted/book.epub",
+    "nativeDetails": {
+      "platform": "android",
+      "nativeCode": "LOCATOR_NOT_FOUND",
+      "cause": null
+    }
+  }
+}

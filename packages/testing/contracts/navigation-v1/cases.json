@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "maximumBridgePosition": 2147483647,
+  "progressionCases": [
+    { "name": "start", "value": 0, "valid": true },
+    { "name": "middle", "value": 0.5, "valid": true },
+    { "name": "end", "value": 1, "valid": true },
+    { "name": "below-start", "value": -0.01, "valid": false },
+    { "name": "after-end", "value": 1.01, "valid": false }
+  ],
+  "positionCases": [
+    { "name": "first", "value": 1, "valid": true },
+    { "name": "bridge-maximum", "value": 2147483647, "valid": true },
+    { "name": "zero", "value": 0, "valid": false },
+    { "name": "negative", "value": -1, "valid": false },
+    { "name": "fractional", "value": 1.5, "valid": false },
+    { "name": "above-bridge-maximum", "value": 2147483648, "valid": false }
+  ],
+  "outcomeCases": [
+    { "name": "jump-moved", "command": "jump", "moved": true, "expected": "success-true" },
+    { "name": "jump-rejected", "command": "jump", "moved": false, "expected": "NAVIGATION_FAILED" },
+    { "name": "logical-moved", "command": "logical", "moved": true, "expected": "success-true" },
+    {
+      "name": "logical-boundary",
+      "command": "logical",
+      "moved": false,
+      "expected": "success-false"
+    }
+  ],
+  "restoreReasonCases": [
+    {
+      "name": "ordinary-open",
+      "hasLocator": false,
+      "preferenceChange": false,
+      "expected": "initial"
+    },
+    {
+      "name": "explicit-restore",
+      "hasLocator": true,
+      "preferenceChange": false,
+      "expected": "restored"
+    },
+    {
+      "name": "preference-recreation",
+      "hasLocator": true,
+      "preferenceChange": true,
+      "expected": "preference-change"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "noEmit": true,
+    "paths": {
+      "native-epub-kit": ["./src/index.ts"]
+    }
+  },
+  "include": ["./docs/examples/**/*.ts", "./docs/examples/**/*.tsx"]
+}

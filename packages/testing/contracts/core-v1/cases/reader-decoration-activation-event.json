@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reader-decoration-activation-event",
+  "recordType": "readerDecorationActivationEvent",
+  "payload": {
+    "instanceId": "reader-decoration-v1",
+    "generation": 4,
+    "sequence": 9,
+    "platform": "ios",
+    "group": "annotations",
+    "decoration": {
+      "id": "annotation-0001",
+      "locator": {
+        "href": "text/mixed.xhtml",
+        "type": "application/xhtml+xml",
+        "locations": { "fragments": ["mixed-selection"], "progression": 0.5 },
+        "text": { "highlight": "English before اردو متن and English after." }
+      },
+      "style": { "type": "highlight", "tint": "#e8c97a", "isActive": true },
+      "data": { "annotationId": "annotation-0001", "note": null }
+    },
+    "geometry": {
+      "coordinateSpace": "reader-view-and-window-v1",
+      "viewport": { "width": 390, "height": 844 },
+      "viewRect": { "x": 24, "y": 260, "width": 242, "height": 44 },
+      "visibleViewRect": { "x": 24, "y": 260, "width": 242, "height": 44 },
+      "windowRect": { "x": 24, "y": 319, "width": 242, "height": 44 },
+      "visibleWindowRect": { "x": 24, "y": 319, "width": 242, "height": 44 }
+    }
+  }
+}

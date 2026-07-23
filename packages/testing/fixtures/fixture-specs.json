@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "minimal-en",
+      "file": "minimal-en.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "epub3",
+        "ltr",
+        "multiple-spine-items",
+        "vertical-scroll",
+        "progress",
+        "gesture-boundary"
+      ],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "toc-complex",
+      "file": "toc-complex.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["nested-toc", "same-resource-fragment", "cross-resource-fragment"],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "footnotes",
+      "file": "footnotes.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "same-resource-footnote",
+        "cross-resource-footnote",
+        "backlink",
+        "ordinary-internal-link",
+        "external-link"
+      ],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "rtl-custom-font",
+      "file": "rtl-custom-font.epub",
+      "language": "ur",
+      "direction": "rtl",
+      "features": [
+        "rtl",
+        "urdu",
+        "arabic",
+        "custom-font",
+        "rtl-spine",
+        "multiple-spine-items",
+        "vertical-scroll",
+        "progress",
+        "gesture-boundary",
+        "native-selection-target"
+      ],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "mixed-bidi",
+      "file": "mixed-bidi.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["mixed-bidi", "bdi", "bdo", "inline-direction-switch"],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "images",
+      "file": "images.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["svg-image", "image-alt", "image-caption"],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "malformed-link",
+      "file": "malformed-link.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["missing-resource-link", "negative-validation"],
+      "validation": { "outcome": "invalid", "requiredMessageIds": ["RSC-007"] }
+    },
+    {
+      "id": "annotation-stress",
+      "file": "annotation-stress.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": [
+        "annotation-stress",
+        "2048-addressable-paragraphs",
+        "long-document",
+        "multi-page-position-list"
+      ],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "fixed-layout",
+      "file": "fixed-layout.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["epub3", "fixed-layout", "multiple-spine-items", "capability-gating"],
+      "validation": { "outcome": "valid" }
+    },
+    {
+      "id": "search-failure",
+      "file": "search-failure.epub",
+      "language": "en",
+      "direction": "ltr",
+      "features": ["search", "missing-reading-resource", "negative-validation"],
+      "validation": { "outcome": "invalid", "requiredMessageIds": ["RSC-001"] }
+    }
+  ]
+}

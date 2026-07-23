@@ -1,0 +1,38 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'fixture-rtl'
+    timeout: 20000
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 20000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- extendedWaitUntil:
+    visible: 'Selection action pending'
+    timeout: 10000
+- longPressOn:
+    point: '65%,39%'
+- extendedWaitUntil:
+    visible: 'Highlight'
+    timeout: 10000
+- tapOn: 'Highlight'
+- extendedWaitUntil:
+    visible: '.*android.*highlight.*selection .+.*direction rtl.*copy allowed.*truncated no.*visible clipped.*spaces consistent.*handles retained.*command selection.*locator.*urdu-reading.xhtml.*'
+    timeout: 10000
+- setOrientation: LANDSCAPE_LEFT
+- waitForAnimationToEnd

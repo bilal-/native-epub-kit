@@ -1,0 +1,382 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- tapOn:
+    text: 'Close'
+    optional: true
+- tapOn:
+    text: '.*:8083.*'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# The zero-config policy favors continuous reading: scrolling stays live,
+# cross-resource swipes and edge taps are off, and external reading keys work.
+- extendedWaitUntil:
+    visible: '.*policy scrolled/ltr.*page enabled.*chapter disabled.*edges off.*keys on.*suppressed no.*animated no.*application initial.*boundary navigation-unit/(continuous|position|resource).*'
+    timeout: 30000
+- tapOn:
+    id: 'probe-navigation-policy'
+- extendedWaitUntil:
+    visible: '.*policy command coherent yes.*'
+    timeout: 10000
+
+# Use the long generated publication so an enabled page gesture always has a
+# same-resource page to reveal, including on tablets and large text layouts.
+- tapOn:
+    id: 'fixture-stress'
+- extendedWaitUntil:
+    visible: '.*publication Annotation Stress Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+
+# Paginated page gestures obey the live page policy without recreating Readium.
+- tapOn:
+    id: 'toggle-navigation-layout'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter disabled.*'
+    timeout: 30000
+- tapOn:
+    id: 'reset-gesture-location'
+- extendedWaitUntil:
+    visible: '.*gesture reset yes.*stress.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-page-gesture'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page disabled.*chapter disabled.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-page-gesture'
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter disabled.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'reset-gesture-location'
+- extendedWaitUntil:
+    visible: '.*gesture reset yes.*stress.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved yes.*resource same yes.*'
+    timeout: 15000
+- extendedWaitUntil:
+    visible: '.*user-page-turn.*stress.xhtml.*'
+    timeout: 15000
+
+# A short two-resource publication makes the chapter boundary deterministic.
+# The default rejects the crossing and the opt-in recreates the navigator at
+# the same locator before allowing it.
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter disabled.*edges off.*keys on.*'
+    timeout: 30000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-chapter-gesture'
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*policy paginated/ltr.*page enabled.*chapter enabled.*application navigator-recreation.*'
+    timeout: 30000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved yes.*resource same no.*'
+    timeout: 15000
+
+# Edge taps are independently live-configurable and respect global suppression.
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- tapOn:
+    point: '90%,70%'
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-edge-taps'
+- extendedWaitUntil:
+    visible: '.*chapter enabled.*edges on.*suppressed no.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- tapOn:
+    point: '90%,70%'
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved yes.*resource same no.*'
+    timeout: 15000
+- tapOn:
+    id: 'prepare-gesture-boundary'
+- extendedWaitUntil:
+    visible: '.*gesture boundary yes.*part-1.xhtml.*'
+    timeout: 15000
+- tapOn:
+    id: 'toggle-input-suppression'
+- extendedWaitUntil:
+    visible: '.*edges on.*keys on.*suppressed yes.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- tapOn:
+    point: '90%,70%'
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+
+# Hardware-key policy is independently live-configurable. Physical key routing
+# is exercised by the platform-specific harness because Maestro's shared YAML
+# key enum does not expose arrow or space events.
+- tapOn:
+    id: 'toggle-input-suppression'
+- tapOn:
+    id: 'toggle-hardware-keys'
+- extendedWaitUntil:
+    visible: '.*edges on.*keys off.*suppressed no.*application live.*'
+    timeout: 10000
+- tapOn:
+    id: 'toggle-hardware-keys'
+- extendedWaitUntil:
+    visible: '.*edges on.*keys on.*suppressed no.*application live.*'
+    timeout: 10000
+
+# RTL maps the physical horizontal gesture in the opposite direction while
+# retaining the same logical forward semantics.
+- tapOn:
+    id: 'fixture-rtl'
+- extendedWaitUntil:
+    visible: '.*publication RTL and Custom Font Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'reader-state'
+      text: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*policy paginated/rtl.*page enabled.*chapter enabled.*edges on.*keys on.*suppressed no.*'
+    timeout: 30000
+- tapOn:
+    id: 'reset-gesture-location'
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '82%,70%'
+    end: '18%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved no.*resource same yes.*'
+    timeout: 15000
+- tapOn:
+    id: 'arm-gesture-anchor'
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- waitForAnimationToEnd
+- swipe:
+    start: '18%,70%'
+    end: '82%,70%'
+    duration: 500
+- waitForAnimationToEnd
+- tapOn:
+    id: 'settle-gesture-input'
+- extendedWaitUntil:
+    visible: 'gesture settlement complete'
+    timeout: 5000
+- tapOn:
+    id: 'reader-unfocus'
+- tapOn:
+    id: 'verify-gesture-movement'
+- extendedWaitUntil:
+    visible: '.*gesture moved yes.*resource same yes.*'
+    timeout: 15000
+- takeScreenshot: navigation-policy-rtl
