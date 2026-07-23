@@ -14,7 +14,7 @@
     "expo": "~56.0.12",
     "expo-asset": "~56.0.19",
     "expo-dev-client": "~56.0.20",
-    "expo-file-system": "~56.0.8",
+    "expo-file-system": "~57.0.1",
     "expo-status-bar": "~56.0.4",
     "native-epub-kit": "workspace:*",
     "react": "19.2.3",
