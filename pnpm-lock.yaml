@@ -48,8 +48,8 @@ importers:
         specifier: ~56.0.8
         version: 56.0.8(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))
       expo-status-bar:
-        specifier: ~56.0.4
-        version: 56.0.4(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
+        specifier: ~57.0.1
+        version: 57.0.1(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
       native-epub-kit:
         specifier: workspace:*
         version: link:../../packages/native-epub-kit
@@ -1898,8 +1898,8 @@ packages:
     resolution: {integrity: sha512-SmM2p2g3Jrktpiazcst+OxhjSzOHXKAY4BPURHYHXvApzzoybMmrNF4IEZ8DKZ145BhSe4ydAmlEFCRTsdtgUQ==}
     engines: {node: '>=20.16.0'}
 
-  expo-status-bar@56.0.4:
-    resolution: {integrity: sha512-IGs/fDfkHXofy2ZQrGiXayhFK04HB85FZXorhcEhDZEcqASKgSqpak+HwUtAaR0MeTJwWyHNF7I6VmVbbp8EcA==}
+  expo-status-bar@57.0.1:
+    resolution: {integrity: sha512-Xwaq1gAoVRWx5dPG5VhT5RSbnI9OilhZnO5qoPBnUaBAa5VzRzfdS8q0/bsPt0jR2DKLtGuP0bQ6efMJ4RIMDg==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -6072,7 +6072,7 @@ snapshots:
 
   expo-server@56.0.5: {}
 
-  expo-status-bar@56.0.4(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3):
+  expo-status-bar@57.0.1(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3):
     dependencies:
       expo: 56.0.15(@babel/core@7.29.7(supports-color@8.1.1))(@expo/dom-webview@56.0.6)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1)(typescript@6.0.3)
       react: 19.2.3
