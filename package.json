@@ -38,9 +38,9 @@
     "@changesets/cli": "2.31.0",
     "eslint": "9.39.4",
     "eslint-config-universe": "15.0.3",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "typescript": "~6.0.3",
-    "vitest": "4.1.10",
+    "vitest": "4.1.11",
     "yaml": "2.9.0"
   },
   "description": "An open-source native EPUB foundation for Expo and React Native applications, powered by the official Readium Swift and Kotlin toolkits.",
