@@ -133,6 +133,15 @@ private struct NavigationBoundariesContract: Decodable {
   let maximumHistoryEntries: Int
   let boundaryCases: [NavigationBoundaryCase]
   let units: [ReaderNavigationUnitBoundary]
+  let swipeCases: [ChapterSwipeCase]
+}
+
+private struct ChapterSwipeCase: Decodable {
+  let name: String
+  let dx: Double
+  let dy: Double
+  let readingProgression: String
+  let expected: String?
 }
 
 private struct NavigationBoundaryCase: Decodable {
@@ -789,6 +798,14 @@ private enum LifecycleHarnessMain {
       )
       try expect(match?.unit.id == testCase.expected.unitId, "\(testCase.name) unit")
       try expect(match?.precision == testCase.expected.precision, "\(testCase.name) precision")
+    }
+    for testCase in navigationBoundariesContract.swipeCases {
+      let direction = NavigationUnitBoundaryPolicy.chapterSwipeDirection(
+        dx: testCase.dx,
+        dy: testCase.dy,
+        readingProgression: testCase.readingProgression
+      )
+      try expect(direction == testCase.expected, "\(testCase.name) swipe direction")
     }
 
     let diagnosticsContract = try JSONDecoder().decode(

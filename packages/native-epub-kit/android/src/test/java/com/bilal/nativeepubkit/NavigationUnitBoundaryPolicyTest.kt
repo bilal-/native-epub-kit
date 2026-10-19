@@ -9,6 +9,22 @@ import org.junit.Test
 
 class NavigationUnitBoundaryPolicyTest {
   @Test
+  fun matchesSharedSwipeCases() {
+    val contract = JSONObject(File(contractPath()).readText())
+    contract.getJSONArray("swipeCases").objects().forEach { testCase ->
+      assertEquals(
+        testCase.getString("name"),
+        testCase.optString("expected").takeIf { !testCase.isNull("expected") },
+        NavigationUnitBoundaryPolicy.chapterSwipeDirection(
+          testCase.getDouble("dx"),
+          testCase.getDouble("dy"),
+          testCase.getString("readingProgression"),
+        ),
+      )
+    }
+  }
+
+  @Test
   fun matchesSharedBoundaryCases() {
     val contract = JSONObject(File(contractPath()).readText())
     assertEquals(1, contract.getInt("version"))

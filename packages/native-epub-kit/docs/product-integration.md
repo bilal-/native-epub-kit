@@ -13,7 +13,9 @@ Use `getNavigationUnits()` for a contents UI and
 `getNavigationUnitContext()` for Previous/Next availability.
 
 Keep `chapterTurnGesture: 'disabled'` by default. A disabled swipe or key that
-would cross the exact unit emits `onNavigationUnitBoundary`; show an app-owned
+would cross the exact unit emits `onNavigationUnitBoundary`. In scrolled layout
+the page does not move at all; in paginated layout the attempted turn is rolled
+back to the accepted position. Show an app-owned
 continuation surface and call `goToNextNavigationUnit()` only after an explicit
 action. Always provide visible Previous and Next controls even when chapter
 gestures are enabled.
