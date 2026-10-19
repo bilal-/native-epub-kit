@@ -1,6 +1,7 @@
 import { NativeEpubKitError, parseLocator, parsePublicationLink } from '../recordValidation.ts';
 import {
   NAVIGATION_UNIT_DIAGNOSTIC_CODES,
+  UNTITLED_RESOURCE_POLICIES,
   type ChapterGranularity,
   type Locator,
   type NavigationUnit,
@@ -14,6 +15,7 @@ import {
   type PublicationLink,
   type PublicationPositionsPage,
   type PublicationPositionsRequest,
+  type UntitledResourcePolicy,
 } from '../records.ts';
 
 export const MAXIMUM_NAVIGATION_UNIT_DIAGNOSTIC_ISSUES = 512;
@@ -407,6 +409,7 @@ export function deriveNavigationUnits(
   if (!Array.isArray(input.positions)) {
     throw new TypeError('Navigation-unit positions must be an array.');
   }
+  const untitledResources = normalizeUntitledResourcePolicy(input.untitledResources);
 
   const granularity = normalizeChapterGranularity(input.granularity);
   const tableOfContents = input.tableOfContents.map(parsePublicationLink);
@@ -569,7 +572,7 @@ export function deriveNavigationUnits(
     const needsFallback =
       uniqueTocBoundaries.length === 0 ||
       readingEntry.index < earliestSelectedResource ||
-      !tocCoveredResources.has(readingEntry.resource);
+      (!tocCoveredResources.has(readingEntry.resource) && untitledResources === 'separate-units');
     if (!needsFallback) continue;
 
     const target = normalizeHref(readingEntry.link.href);
@@ -631,10 +634,23 @@ function snapshotMismatch(message: string): NativeEpubKitError {
   });
 }
 
+export function normalizeUntitledResourcePolicy(
+  policy: UntitledResourcePolicy | undefined
+): UntitledResourcePolicy {
+  if (policy === undefined) return 'separate-units';
+  if (!(UNTITLED_RESOURCE_POLICIES as readonly string[]).includes(policy)) {
+    throw new TypeError(
+      `Untitled resource policy must be one of ${UNTITLED_RESOURCE_POLICIES.join(', ')}.`
+    );
+  }
+  return policy;
+}
+
 /** Loads every bounded position page while enforcing one coherent generation. */
 export async function loadNavigationUnitSnapshot(
   source: NavigationUnitSnapshotSource,
-  granularity?: ChapterGranularity
+  granularity?: ChapterGranularity,
+  untitledResources?: UntitledResourcePolicy
 ): Promise<NavigationUnitSnapshot> {
   const normalizedGranularity = normalizeChapterGranularity(granularity);
   const publication = await source.getPublication();
@@ -671,6 +687,7 @@ export async function loadNavigationUnitSnapshot(
     ...deriveNavigationUnits({
       granularity: normalizedGranularity,
       positions,
+      ...(untitledResources === undefined ? {} : { untitledResources }),
       readingOrder: publication.readingOrder,
       tableOfContents: publication.tableOfContents,
     }),

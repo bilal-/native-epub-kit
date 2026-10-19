@@ -54,6 +54,7 @@ import {
 import {
   loadNavigationUnitSnapshot,
   normalizeChapterGranularity,
+  normalizeUntitledResourcePolicy,
 } from './internal/NavigationUnitPolicy.ts';
 import { normalizePublicationPositionRequest } from './internal/PublicationDataPolicy.ts';
 import { parseReaderDiagnostics } from './internal/ReaderDiagnostics.ts';
@@ -98,6 +99,7 @@ import {
 } from './recordValidation.ts';
 import type {
   ChapterGranularity,
+  UntitledResourcePolicy,
   NavigationOptions,
   NavigationUnitSnapshot,
   ReaderLocationEvent,
@@ -176,8 +178,13 @@ interface LocationEnhancementSession extends ReaderGenerationIdentity {
 const MAXIMUM_PENDING_LOCATION_EVENTS = 32;
 const INITIAL_LOCATION_TIMEOUT_MILLISECONDS = 2_000;
 
-function granularityKey(granularity: ChapterGranularity): string {
-  return typeof granularity === 'string' ? granularity : `depth:${granularity.depth}`;
+function granularityKey(
+  granularity: ChapterGranularity,
+  untitledResources: UntitledResourcePolicy
+): string {
+  const granularityPart =
+    typeof granularity === 'string' ? granularity : `depth:${granularity.depth}`;
+  return `${granularityPart}|${untitledResources}`;
 }
 
 function identitiesMatch(left: ReaderGenerationIdentity, right: ReaderGenerationIdentity): boolean {
@@ -186,7 +193,8 @@ function identitiesMatch(left: ReaderGenerationIdentity, right: ReaderGeneration
 
 async function loadNavigationSnapshotFromNative(
   native: NativeEpubReaderViewRef,
-  granularity?: ChapterGranularity
+  granularity: ChapterGranularity | undefined,
+  untitledResources: UntitledResourcePolicy
 ): Promise<NavigationUnitSnapshot> {
   return loadNavigationUnitSnapshot(
     {
@@ -202,7 +210,8 @@ async function loadNavigationSnapshotFromNative(
         );
       },
     },
-    granularity
+    granularity,
+    untitledResources
   );
 }
 
@@ -229,6 +238,7 @@ const NativeEpubReaderView: ComponentType<
 const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(function EpubReaderView(
   {
     chapterGranularity,
+    untitledResources,
     classifyFootnote,
     footnotePolicy,
     imagePolicy,
@@ -276,8 +286,13 @@ const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(functi
       chapterGranularity === undefined ? null : normalizeChapterGranularity(chapterGranularity),
     [chapterGranularity]
   );
+  const resolvedUntitledResources = normalizeUntitledResourcePolicy(untitledResources);
+  const untitledResourcesRef = useRef(resolvedUntitledResources);
+  untitledResourcesRef.current = resolvedUntitledResources;
   const resolvedChapterGranularityKey =
-    resolvedChapterGranularity === null ? null : granularityKey(resolvedChapterGranularity);
+    resolvedChapterGranularity === null
+      ? null
+      : granularityKey(resolvedChapterGranularity, resolvedUntitledResources);
   const chapterGranularityRef = useRef<ChapterGranularity | null>(resolvedChapterGranularity);
   const chapterGranularityKeyRef = useRef<string | null>(resolvedChapterGranularityKey);
   onLocationChangeRef.current = onLocationChange;
@@ -331,7 +346,11 @@ const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(functi
       const snapshot = session?.snapshot ?? (await session?.promise);
       return snapshot && identitiesMatch(snapshot, location) ? snapshot : null;
     }
-    const snapshot = await loadNavigationSnapshotFromNative(native, 'top-level');
+    const snapshot = await loadNavigationSnapshotFromNative(
+      native,
+      'top-level',
+      untitledResourcesRef.current
+    );
     return identitiesMatch(snapshot, location) ? snapshot : null;
   };
 
@@ -396,7 +415,11 @@ const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(functi
       status: 'loading',
     };
     locationEnhancementRef.current = session;
-    session.promise = loadNavigationSnapshotFromNative(native, granularity)
+    session.promise = loadNavigationSnapshotFromNative(
+      native,
+      granularity,
+      untitledResourcesRef.current
+    )
       .then(async (snapshot) => {
         const stillConfigured = chapterGranularityKeyRef.current === session.granularityKey;
         const stillReady = readyIdentityRef.current
@@ -644,12 +667,17 @@ const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(functi
           active &&
           readyIdentity &&
           identitiesMatch(active, readyIdentity) &&
-          active.granularityKey === granularityKey(normalizedGranularity)
+          active.granularityKey ===
+            granularityKey(normalizedGranularity, untitledResourcesRef.current)
         ) {
           const snapshot = active.snapshot ?? (await active.promise);
           if (snapshot) return snapshot;
         }
-        return loadNavigationSnapshotFromNative(native, normalizedGranularity);
+        return loadNavigationSnapshotFromNative(
+          native,
+          normalizedGranularity,
+          untitledResourcesRef.current
+        );
       },
       async getPositions(request) {
         const native = nativeRef.current;

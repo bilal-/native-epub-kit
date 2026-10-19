@@ -2,6 +2,7 @@ import type { NativeSyntheticEvent, ViewProps } from 'react-native';
 
 import type {
   ChapterGranularity,
+  UntitledResourcePolicy,
   FootnoteEvent,
   FootnotePolicy,
   Locator,
@@ -272,6 +273,11 @@ export interface EpubReaderViewProps extends ViewProps {
   source?: PublicationSource | null;
   /** Opts stable location callbacks into derived unit/chapter progress. */
   chapterGranularity?: ChapterGranularity;
+  /**
+   * How reading-order resources missing from the table of contents become units.
+   * Defaults to `separate-units`; see {@link UntitledResourcePolicy}.
+   */
+  untitledResources?: UntitledResourcePolicy;
   /** Locator restored atomically when a new source generation is opened. */
   initialLocator?: Locator;
   /** Validated rendering preferences; omitted fields use stable package defaults. */

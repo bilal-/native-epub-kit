@@ -396,6 +396,16 @@ export const NAVIGATION_UNIT_SOURCES = ['toc', 'reading-order-fallback'] as cons
 
 export type ChapterGranularity = 'top-level' | 'leaf' | { depth: number };
 
+export const UNTITLED_RESOURCE_POLICIES = ['separate-units', 'merge-into-preceding'] as const;
+
+/**
+ * How reading-order resources absent from the table of contents become navigation units.
+ * `separate-units` (default) gives each one its own unit. `merge-into-preceding` folds those
+ * after the first resolved TOC entry into the preceding unit, which suits publications that
+ * keep footnote or continuation pages in the reading order without listing them.
+ */
+export type UntitledResourcePolicy = (typeof UNTITLED_RESOURCE_POLICIES)[number];
+
 /** A duplicate TOC label retained after two entries resolve to one boundary. */
 export interface NavigationUnitAlias {
   depth: number;
@@ -446,6 +456,7 @@ export interface NavigationUnitDerivationDiagnostics {
 
 export interface NavigationUnitDerivationInput {
   granularity?: ChapterGranularity;
+  untitledResources?: UntitledResourcePolicy;
   positions: readonly Locator[];
   readingOrder: readonly PublicationLink[];
   tableOfContents: readonly PublicationLink[];

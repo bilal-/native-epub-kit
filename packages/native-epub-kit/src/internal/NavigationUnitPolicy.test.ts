@@ -199,6 +199,89 @@ describe('granularity and stable hierarchy', () => {
   });
 });
 
+describe('untitled reading-order resources', () => {
+  // A publisher omitted footnote pages from the TOC but kept them in the reading order.
+  const readingOrder = [
+    link('text/cover.xhtml', 'cover'),
+    link('text/book.xhtml', 'book'),
+    link('text/note-1.xhtml', 'note-1'),
+    link('text/note-2.xhtml', 'note-2'),
+    link('text/epilogue.xhtml', 'epilogue'),
+    link('text/note-3.xhtml', 'note-3'),
+  ];
+  const tableOfContents = [
+    link('text/book.xhtml', 'Book'),
+    link('text/epilogue.xhtml', 'Epilogue'),
+  ];
+  const positions = readingOrder.map((entry, index) => ({
+    ...position(entry.href, index + 1),
+    locations: { position: index + 1, totalProgression: index / readingOrder.length },
+  }));
+  const derive = (untitledResources?: 'merge-into-preceding' | 'separate-units') =>
+    deriveNavigationUnits({
+      granularity: 'top-level',
+      positions,
+      readingOrder,
+      tableOfContents,
+      ...(untitledResources === undefined ? {} : { untitledResources }),
+    });
+
+  it('keeps each untitled resource as its own unit by default', () => {
+    expect(derive().units.map((unit) => unit.href)).toEqual([
+      'text/cover.xhtml',
+      'text/book.xhtml',
+      'text/note-1.xhtml',
+      'text/note-2.xhtml',
+      'text/epilogue.xhtml',
+      'text/note-3.xhtml',
+    ]);
+    expect(derive('separate-units').units).toEqual(derive().units);
+  });
+
+  it('folds untitled resources after the first TOC entry into the preceding unit', () => {
+    const result = derive('merge-into-preceding');
+    expect(
+      result.units.map((unit) => [
+        unit.href,
+        unit.source,
+        unit.startPosition,
+        unit.endPositionExclusive,
+      ])
+    ).toEqual([
+      ['text/cover.xhtml', 'reading-order-fallback', 1, 2],
+      ['text/book.xhtml', 'toc', 2, 5],
+      ['text/epilogue.xhtml', 'toc', 5, 7],
+    ]);
+    expect(result.diagnostics.fallbackUnitCount).toBe(1);
+    expect(result.diagnostics.unitCount).toBe(3);
+    result.units.forEach((unit) => expect(parseNavigationUnit(unit)).toEqual(unit));
+  });
+
+  it('still falls back by resource when the TOC resolves nothing', () => {
+    const result = deriveNavigationUnits({
+      granularity: 'top-level',
+      positions,
+      readingOrder,
+      tableOfContents: [link('text/missing.xhtml', 'Missing')],
+      untitledResources: 'merge-into-preceding',
+    });
+    expect(result.units).toHaveLength(readingOrder.length);
+    expect(result.units.every((unit) => unit.source === 'reading-order-fallback')).toBe(true);
+  });
+
+  it('rejects an unknown untitled-resource policy', () => {
+    expect(() =>
+      deriveNavigationUnits({
+        granularity: 'top-level',
+        positions,
+        readingOrder,
+        tableOfContents,
+        untitledResources: 'drop' as 'merge-into-preceding',
+      })
+    ).toThrow(TypeError);
+  });
+});
+
 describe('validation, bounds, and coherent paging', () => {
   it('normalizes only supported bounded granularity values', () => {
     expect(normalizeChapterGranularity()).toBe('top-level');
