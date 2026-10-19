@@ -32,6 +32,16 @@ appId: com.bilal.nativeepubkit.example
 - assertVisible:
     id: 'reader-focus-mode'
 
+# A horizontal swipe that begins on an image is navigation, not activation.
+# Chapter swipes are disabled here, so the touch ends on the image unscrolled.
+- swipe:
+    from: 'An abstract open book on a navy background with a gold bookmark.'
+    direction: LEFT
+    duration: 400
+- waitForAnimationToEnd
+- assertNotVisible:
+    id: 'image-sheet'
+
 # Activating the rendered EPUB image returns stable metadata, source identity,
 # rights, geometry where available, and an opaque generation-scoped handle.
 - tapOn: 'An abstract open book on a navy background with a gold bookmark.'
