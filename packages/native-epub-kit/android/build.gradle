@@ -37,6 +37,11 @@ dependencies {
 }
 
 tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+  // The shared contracts are read at runtime through the paths below; declare
+  // them so editing a contract reruns the tests instead of reporting UP-TO-DATE.
+  inputs.dir(file("${projectDir}/../../testing/contracts"))
+    .withPropertyName('sharedContracts')
+    .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
   systemProperty(
     'nativeEpubKitContractsDir',
     file("${projectDir}/../../testing/contracts/qualification-v0/cases").canonicalPath
