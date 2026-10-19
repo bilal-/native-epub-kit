@@ -259,7 +259,7 @@ internal object FootnoteLinkPolicy {
     if (fragment.isEmpty()) return ""
     val id = Pattern.quote(fragment)
     val opening = firstMatch(
-      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])$id\\2[^>]*?(/?)>",
+      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*(?<![\\w:-])id\\s*=\\s*(['\"])$id\\2[^>]*?(/?)>",
       document,
       0,
     ) ?: return ""
@@ -279,14 +279,20 @@ internal object FootnoteLinkPolicy {
 
   private fun followingHtml(document: String, start: Int): String {
     var position = start
-    anchoredMatch("(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+", document, position)?.let { position = it.end() }
+    val gapPattern = "(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+"
+    anchoredMatch(gapPattern, document, position)?.let { position = it.end() }
+    // An anchor alone in its own block (`<p><a id></a></p>`) points at the next block.
+    anchoredMatch("</(?:$BLOCK_TAGS)\\s*>", document, position)?.let { emptyContainer ->
+      position = emptyContainer.end()
+      anchoredMatch(gapPattern, document, position)?.let { position = it.end() }
+    }
     anchoredMatch("<($BLOCK_TAGS)\\b[^>]*>", document, position)?.let { block ->
       val tag = block.group(1)
       val closing = firstMatch("</$tag\\s*>", document, block.end()) ?: return ""
       return document.substring(position, closing.end())
     }
     val boundary = firstMatch(
-      "</?(?:$BLOCK_TAGS|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*\\bid\\s*=",
+      "</?(?:$BLOCK_TAGS|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*(?<![\\w:-])id\\s*=",
       document,
       position,
     )

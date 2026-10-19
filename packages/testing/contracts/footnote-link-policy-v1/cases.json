@@ -230,6 +230,18 @@
       "fragment": "a.b",
       "document": "<p id=\"aXb\">Wrong.</p><p id=\"a.b\">Right.</p>",
       "expectedHtml": "<p id=\"a.b\">Right.</p>"
+    },
+    {
+      "name": "empty-anchor-in-empty-paragraph-returns-next-block",
+      "fragment": "fn7",
+      "document": "<p><a id=\"fn7\"></a></p>\n<p>Seventh.</p><p>Unrelated.</p>",
+      "expectedHtml": "<p>Seventh.</p>"
+    },
+    {
+      "name": "data-id-is-not-an-id",
+      "fragment": "fn8",
+      "document": "<p data-id=\"fn8\">Decoy.</p><p id=\"fn8\">Eighth.</p>",
+      "expectedHtml": "<p id=\"fn8\">Eighth.</p>"
     }
   ]
 }

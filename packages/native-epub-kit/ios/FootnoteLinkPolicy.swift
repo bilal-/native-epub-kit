@@ -323,7 +323,7 @@ enum FootnoteLinkPolicy {
     let id = NSRegularExpression.escapedPattern(for: fragment)
     guard
       let opening = firstMatch(
-        "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])\(id)\\2[^>]*?(/?)>",
+        "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*(?<![\\w:-])id\\s*=\\s*(['\"])\(id)\\2[^>]*?(/?)>",
         in: text,
         from: 0
       )
@@ -356,8 +356,16 @@ enum FootnoteLinkPolicy {
 
   private static func followingHTML(in text: NSString, from start: Int) -> String {
     var position = start
-    if let gap = anchoredMatch("(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+", in: text, at: position) {
+    let gapPattern = "(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+"
+    if let gap = anchoredMatch(gapPattern, in: text, at: position) {
       position = gap.range.upperBound
+    }
+    // An anchor alone in its own block (`<p><a id></a></p>`) points at the next block.
+    if let emptyContainer = anchoredMatch("</(?:\(blockTags))\\s*>", in: text, at: position) {
+      position = emptyContainer.range.upperBound
+      if let gap = anchoredMatch(gapPattern, in: text, at: position) {
+        position = gap.range.upperBound
+      }
     }
     if let block = anchoredMatch("<(\(blockTags))\\b[^>]*>", in: text, at: position) {
       let tag = text.substring(with: block.range(at: 1))
@@ -369,7 +377,7 @@ enum FootnoteLinkPolicy {
       )
     }
     let boundary = firstMatch(
-      "</?(?:\(blockTags)|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*\\bid\\s*=",
+      "</?(?:\(blockTags)|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*(?<![\\w:-])id\\s*=",
       in: text,
       from: position
     )
