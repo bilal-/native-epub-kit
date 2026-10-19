@@ -16,9 +16,16 @@ const nativeDependencies = require('../native-dependencies.json');
 const packageMetadata = require('../package.json');
 
 const DESUGAR_DEPENDENCY = nativeDependencies.android.coreLibraryDesugaring;
+// Mirrors s.platforms in ios/NativeEpubKit.podspec.
+const IOS_MINIMUM_DEPLOYMENT_TARGET = '16.4';
 const READIUM_PODS = ['ReadiumInternal', 'ReadiumShared', 'ReadiumStreamer', 'ReadiumNavigator'];
 const POD_BLOCK_BEGIN = '  # @generated begin native-epub-kit Readium pods';
 const POD_BLOCK_END = '  # @generated end native-epub-kit Readium pods';
+const XCODE_PATCH_BLOCK_BEGIN = '# @generated begin native-epub-kit Xcode compatibility';
+const XCODE_PATCH_BLOCK_END = '# @generated end native-epub-kit Xcode compatibility';
+const DEPLOYMENT_FLOOR_BLOCK_BEGIN =
+  '    # @generated begin native-epub-kit deployment target floor';
+const DEPLOYMENT_FLOOR_BLOCK_END = '    # @generated end native-epub-kit deployment target floor';
 const FONT_MANIFEST_FILE = 'NativeEpubKitFonts.json';
 const FONT_SCHEMA_VERSION = 1;
 const IOS_FONT_DIRECTORY = 'NativeEpubKitFonts';
@@ -309,6 +316,78 @@ function addReadiumPods(contents, { iosProjectRoot, packageRoot }) {
   return next;
 }
 
+function escapeRegExp(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function generatedBlockPattern(separator, begin, end) {
+  return new RegExp(`${separator}${escapeRegExp(begin)}[\\s\\S]*?${escapeRegExp(end)}`, 'g');
+}
+
+/**
+ * Keeps Expo SDK 56 projects building with Xcode 27.1. Readium's resource pods
+ * and CryptoSwift declare iOS 11/13 targets that Xcode 27.1 rejects, and
+ * ExpoModulesJSI passes a Swift closure through a conditional expression that
+ * the Xcode 27.1 compiler no longer converts to a C function pointer.
+ */
+function addXcodeCompatibility(contents, { minimumIos }) {
+  const jsiPatch = [
+    XCODE_PATCH_BLOCK_BEGIN,
+    '# Converts the setter before the conditional so Xcode 27.1 accepts it. The',
+    '# patch is skipped once ExpoModulesJSI ships the fix and fails closed if the',
+    '# surrounding source changes.',
+    'native_epub_kit_jsi_package = begin',
+    `  \`node --print "require.resolve('expo-modules-jsi/package.json', { paths: [require.resolve('expo/package.json')] })"\`.strip`,
+    'rescue StandardError',
+    "  ''",
+    'end',
+    'unless native_epub_kit_jsi_package.empty?',
+    "  native_epub_kit_jsi_runtime = File.join(File.dirname(native_epub_kit_jsi_package), 'apple/Sources/ExpoModulesJSI/Runtime/JavaScriptRuntime.swift')",
+    '  if File.exist?(native_epub_kit_jsi_runtime)',
+    '    native_epub_kit_jsi_source = File.read(native_epub_kit_jsi_runtime)',
+    '    native_epub_kit_jsi_original = "    let callbacks = expo.HostObjectCallbacks(\\n      context, getter, set == nil ? nil : setter, propertyNamesGetter, deallocate)"',
+    '    native_epub_kit_jsi_patched = "    let setterCallback: (@convention(c) (UnsafeMutableRawPointer, UnsafePointer<CChar>, UnsafeMutableRawPointer) -> Void) = setter\\n    let callbacks = expo.HostObjectCallbacks(\\n      context, getter, set == nil ? nil : setterCallback, propertyNamesGetter, deallocate)"',
+    "    if native_epub_kit_jsi_source.include?('set == nil ? nil : setter,') && !native_epub_kit_jsi_source.include?(native_epub_kit_jsi_patched)",
+    "      raise 'native-epub-kit: ExpoModulesJSI changed; review the Xcode 27.1 setter patch.' unless native_epub_kit_jsi_source.include?(native_epub_kit_jsi_original)",
+    '      File.write(native_epub_kit_jsi_runtime, native_epub_kit_jsi_source.sub(native_epub_kit_jsi_original, native_epub_kit_jsi_patched))',
+    '    end',
+    '  end',
+    'end',
+    XCODE_PATCH_BLOCK_END,
+  ].join('\n');
+  const floor = [
+    DEPLOYMENT_FLOOR_BLOCK_BEGIN,
+    '    # Raise pods below the app minimum; Xcode 27.1 rejects targets under iOS 15.',
+    `    native_epub_kit_minimum_ios = podfile_properties['ios.deploymentTarget'] || '${minimumIos}'`,
+    '    installer.pods_project.targets.each do |native_epub_kit_target|',
+    '      native_epub_kit_target.build_configurations.each do |native_epub_kit_build|',
+    "        native_epub_kit_current = native_epub_kit_build.build_settings['IPHONEOS_DEPLOYMENT_TARGET']",
+    '        next unless native_epub_kit_current',
+    '        next unless Gem::Version.new(native_epub_kit_current) < Gem::Version.new(native_epub_kit_minimum_ios)',
+    "        native_epub_kit_build.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = native_epub_kit_minimum_ios",
+    '      end',
+    '    end',
+    DEPLOYMENT_FLOOR_BLOCK_END,
+  ].join('\n');
+
+  let next = contents
+    .replace(generatedBlockPattern('\\n\\n', XCODE_PATCH_BLOCK_BEGIN, XCODE_PATCH_BLOCK_END), '')
+    .replace(
+      generatedBlockPattern('\\n', DEPLOYMENT_FLOOR_BLOCK_BEGIN, DEPLOYMENT_FLOOR_BLOCK_END),
+      ''
+    );
+  const propertiesAnchor = /^podfile_properties = .*$/m;
+  if (!propertiesAnchor.test(next)) {
+    throw new Error('native-epub-kit could not find podfile_properties in the generated Podfile.');
+  }
+  next = next.replace(propertiesAnchor, (line) => `${line}\n\n${jsiPatch}`);
+  const postInstall = /^  post_install do \|installer\|$/m;
+  if (!postInstall.test(next)) {
+    throw new Error('native-epub-kit could not find post_install in the generated Podfile.');
+  }
+  return next.replace(postInstall, (line) => `${line}\n${floor}`);
+}
+
 function addCoreLibraryDesugaring(contents) {
   let next = contents;
   if (!next.includes('coreLibraryDesugaringEnabled true')) {
@@ -341,9 +420,10 @@ function withReadiumPods(config) {
       const podfilePath = path.join(iosProjectRoot, 'Podfile');
       const packageRoot = path.resolve(__dirname, '..');
       const contents = fs.readFileSync(podfilePath, 'utf8');
+      const withPods = addReadiumPods(contents, { iosProjectRoot, packageRoot });
       fs.writeFileSync(
         podfilePath,
-        addReadiumPods(contents, { iosProjectRoot, packageRoot }),
+        addXcodeCompatibility(withPods, { minimumIos: IOS_MINIMUM_DEPLOYMENT_TARGET }),
         'utf8'
       );
       return modConfig;
@@ -437,6 +517,7 @@ module.exports = createRunOncePlugin(
 );
 module.exports.addCoreLibraryDesugaring = addCoreLibraryDesugaring;
 module.exports.addReadiumPods = addReadiumPods;
+module.exports.addXcodeCompatibility = addXcodeCompatibility;
 module.exports.buildFontManifest = buildFontManifest;
 module.exports.MAXIMUM_FONT_FACES = MAXIMUM_FONT_FACES;
 module.exports.iosFontResourcePaths = iosFontResourcePaths;

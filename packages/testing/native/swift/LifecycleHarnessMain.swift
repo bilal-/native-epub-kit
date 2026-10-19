@@ -133,6 +133,15 @@ private struct NavigationBoundariesContract: Decodable {
   let maximumHistoryEntries: Int
   let boundaryCases: [NavigationBoundaryCase]
   let units: [ReaderNavigationUnitBoundary]
+  let swipeCases: [ChapterSwipeCase]
+}
+
+private struct ChapterSwipeCase: Decodable {
+  let name: String
+  let dx: Double
+  let dy: Double
+  let readingProgression: String
+  let expected: String?
 }
 
 private struct NavigationBoundaryCase: Decodable {
@@ -289,6 +298,14 @@ private struct FootnoteLinkPolicyContract: Decodable {
   let maximumExternalSchemes: Int
   let footnoteCases: [FootnotePolicyCase]
   let linkCases: [LinkPolicyCase]
+  let contentCases: [FootnoteContentCase]
+}
+
+private struct FootnoteContentCase: Decodable {
+  let name: String
+  let fragment: String
+  let document: String
+  let expectedHtml: String
 }
 
 private struct FootnotePolicyCase: Decodable {
@@ -782,6 +799,14 @@ private enum LifecycleHarnessMain {
       try expect(match?.unit.id == testCase.expected.unitId, "\(testCase.name) unit")
       try expect(match?.precision == testCase.expected.precision, "\(testCase.name) precision")
     }
+    for testCase in navigationBoundariesContract.swipeCases {
+      let direction = NavigationUnitBoundaryPolicy.chapterSwipeDirection(
+        dx: testCase.dx,
+        dy: testCase.dy,
+        readingProgression: testCase.readingProgression
+      )
+      try expect(direction == testCase.expected, "\(testCase.name) swipe direction")
+    }
 
     let diagnosticsContract = try JSONDecoder().decode(
       DiagnosticsContract.self,
@@ -965,6 +990,16 @@ private enum LifecycleHarnessMain {
       } catch {
         try expect(testCase.expectedError == true, "\(testCase.name) unexpected error \(error)")
       }
+    }
+    for testCase in footnoteLinkContract.contentCases {
+      let html = FootnoteLinkPolicy.targetHTML(
+        document: testCase.document,
+        fragment: testCase.fragment
+      )
+      try expect(
+        html == testCase.expectedHtml,
+        "\(testCase.name) footnote content: \(html)"
+      )
     }
     for testCase in footnoteLinkContract.linkCases {
       do {

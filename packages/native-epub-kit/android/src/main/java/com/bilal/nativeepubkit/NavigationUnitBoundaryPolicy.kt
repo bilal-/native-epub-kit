@@ -112,6 +112,23 @@ internal data class ReaderNavigationUnitBoundaryMatch(
 )
 
 internal object NavigationUnitBoundaryPolicy {
+  /** Minimum horizontal travel, in density-independent pixels. */
+  const val CHAPTER_SWIPE_MINIMUM_DISTANCE = 48.0
+  /** Horizontal travel must dominate vertical travel by this ratio. */
+  const val CHAPTER_SWIPE_DOMINANCE = 2.0
+
+  /**
+   * Direction of a horizontal drag that would turn to an adjacent resource in
+   * scrolled layout, or null for taps, nudges, and vertical scrolling.
+   */
+  fun chapterSwipeDirection(dx: Double, dy: Double, readingProgression: String): String? {
+    if (abs(dx) < CHAPTER_SWIPE_MINIMUM_DISTANCE || abs(dx) < abs(dy) * CHAPTER_SWIPE_DOMINANCE) {
+      return null
+    }
+    val leftward = dx < 0
+    return if (leftward == (readingProgression != "rtl")) "forward" else "backward"
+  }
+
   private const val PROGRESSION_EPSILON = 1e-9
 
   fun match(

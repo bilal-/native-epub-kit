@@ -48,6 +48,19 @@ class FootnoteLinkPolicyTest {
       }
     }
 
+    val contentCases = contract.getJSONArray("contentCases")
+    for (index in 0 until contentCases.length()) {
+      val testCase = contentCases.getJSONObject(index)
+      assertEquals(
+        testCase.getString("name"),
+        testCase.getString("expectedHtml"),
+        FootnoteLinkPolicy.targetHtml(
+          testCase.getString("document"),
+          testCase.getString("fragment"),
+        ),
+      )
+    }
+
     val linkCases = contract.getJSONArray("linkCases")
     for (index in 0 until linkCases.length()) {
       val testCase = linkCases.getJSONObject(index)

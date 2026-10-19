@@ -127,6 +127,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
   private var viewportResizeGuardTask: Task<Void, Never>?
   private var lastViewportSize = CGSize.zero
   private var paginatedDragAnchor: Locator?
+  private var scrolledSwipeStart: CGPoint?
   private var paginatedDragCandidate: Locator?
   private var paginatedDragInProgress = false
   private var paginatedDragSettlementTask: Task<Void, Never>?
@@ -525,16 +526,19 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
       navigator.removeObserver(paginatedDragObserverToken)
     }
     let observer = DragPointerObserver(
-      onStart: { [weak self] _ in
+      onStart: { [weak self] event in
+        self?.scrolledSwipeStart = event.location
         self?.beginPaginatedDrag()
         return false
       },
       onMove: { _ in false },
-      onEnd: { [weak self] _ in
+      onEnd: { [weak self] event in
+        self?.finishScrolledChapterSwipe(at: event.location)
         self?.finishPaginatedDrag()
         return false
       },
       onCancel: { [weak self] _ in
+        self?.scrolledSwipeStart = nil
         self?.finishPaginatedDrag()
         return false
       }
@@ -930,10 +934,11 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
           editingActions: [.copy] + configuredSelectionActions.enumerated().map { index, action in
             EditingAction(title: action.title, action: self.selectionActionSelectors[index])
           },
-          // Always surface boundary candidates to the canonical locator guard.
-          // This keeps enforcement symmetric with Android and avoids relying
-          // on toolkit-specific scroll-boundary behavior.
-          disablePageTurnsWhileScrolling: false,
+          // In scrolled layout a disabled chapter swipe must not move the
+          // page at all; Readium stops resource turns there, and
+          // finishScrolledChapterSwipe reports the attempt. Paginated layout
+          // still relies on the locator guard's rollback.
+          disablePageTurnsWhileScrolling: configuredNavigationPolicy.chapterTurnGesture == "disabled",
           decorationTemplates: NativeDecorationRenderer.templates(),
           fontFamilyDeclarations: openedPublication.metadata.layout != .fixed
               && profile?.publisherStyles.injectsProfileRules == true
@@ -2041,23 +2046,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     else {
       return ""
     }
-    let fragment = NSRegularExpression.escapedPattern(for: String(hrefParts[1]))
-    let pattern =
-      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])\(fragment)\\2[^>]*>.*?</\\1\\s*>"
-    guard
-      let expression = try? NSRegularExpression(
-        pattern: pattern,
-        options: [.caseInsensitive, .dotMatchesLineSeparators]
-      ),
-      let match = expression.firstMatch(
-        in: document,
-        range: NSRange(document.startIndex..., in: document)
-      ),
-      let range = Range(match.range, in: document)
-    else {
-      return ""
-    }
-    return String(document[range])
+    return FootnoteLinkPolicy.targetHTML(document: document, fragment: String(hrefParts[1]))
   }
 
   private func plainText(fromHTML html: String) -> String {
@@ -3403,6 +3392,42 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     paginatedDragInProgress = paginatedDragAnchor != nil
     progressEventTask?.cancel()
     progressEventTask = nil
+  }
+
+  /// Scrolled layout with chapter swipes disabled never turns the resource,
+  /// so report the attempted crossing the way a rejected move would.
+  private func finishScrolledChapterSwipe(at location: CGPoint) {
+    guard let start = scrolledSwipeStart else { return }
+    scrolledSwipeStart = nil
+    guard
+      effectiveReaderLayout() == "scrolled",
+      configuredNavigationPolicy.chapterTurnGesture == "disabled",
+      !configuredNavigationPolicy.inputSuppressed,
+      currentReaderState == .ready,
+      !isProgrammaticNavigationInFlight,
+      gestureRollbackTask == nil,
+      let configuration = navigationUnitBoundaryConfiguration,
+      let current = acceptedNavigationUnitMatch,
+      let locator = acceptedUserLocation ?? navigator?.currentLocation,
+      let direction = NavigationUnitBoundaryPolicy.chapterSwipeDirection(
+        dx: Double(location.x - start.x),
+        dy: Double(location.y - start.y),
+        readingProgression: effectiveReadingProgression()
+      )
+    else {
+      return
+    }
+    let adjacentIndex = current.index + (direction == "forward" ? 1 : -1)
+    guard configuration.units.indices.contains(adjacentIndex) else { return }
+    emitNavigationUnitBoundary(
+      current: current,
+      candidate: ReaderNavigationUnitBoundaryMatch(
+        index: adjacentIndex,
+        precision: current.precision,
+        unit: configuration.units[adjacentIndex]
+      ),
+      locator: locator
+    )
   }
 
   private func finishPaginatedDrag() {

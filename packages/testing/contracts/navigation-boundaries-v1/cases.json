@@ -89,5 +89,63 @@
       "href": "text/shared.xhtml#second",
       "id": "shared-second"
     }
+  ],
+  "swipeCases": [
+    {
+      "name": "ltr leftward swipe moves forward",
+      "dx": -120,
+      "dy": 8,
+      "readingProgression": "ltr",
+      "expected": "forward"
+    },
+    {
+      "name": "ltr rightward swipe moves backward",
+      "dx": 120,
+      "dy": -6,
+      "readingProgression": "ltr",
+      "expected": "backward"
+    },
+    {
+      "name": "rtl rightward swipe moves forward",
+      "dx": 120,
+      "dy": 10,
+      "readingProgression": "rtl",
+      "expected": "forward"
+    },
+    {
+      "name": "rtl leftward swipe moves backward",
+      "dx": -120,
+      "dy": 0,
+      "readingProgression": "rtl",
+      "expected": "backward"
+    },
+    {
+      "name": "short drag is a tap or nudge",
+      "dx": -40,
+      "dy": 0,
+      "readingProgression": "ltr",
+      "expected": null
+    },
+    {
+      "name": "vertical scroll is not a chapter swipe",
+      "dx": -80,
+      "dy": -200,
+      "readingProgression": "ltr",
+      "expected": null
+    },
+    {
+      "name": "diagonal drag below dominance is ignored",
+      "dx": -100,
+      "dy": 60,
+      "readingProgression": "ltr",
+      "expected": null
+    },
+    {
+      "name": "threshold distance is inclusive",
+      "dx": -48,
+      "dy": 0,
+      "readingProgression": "rtl",
+      "expected": "backward"
+    }
   ]
 }

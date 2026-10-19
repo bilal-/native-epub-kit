@@ -312,6 +312,7 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     }
 
     override fun onDrag(event: ReaderDragEvent): Boolean {
+      if (event.type == ReaderDragEvent.Type.End) finishScrolledChapterSwipe(event.offset)
       observePaginatedDrag(event)
       return false
     }
@@ -1291,12 +1292,12 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       configuration.decorationTemplates = NativeDecorationRenderer.templates()
       configuration.selectionActionModeCallback = selectionActionModeCallback
       configuration.disableSelectionWhenProtected = true
-      // Let Readium surface the candidate at a resource boundary. Its native
-      // scroll-boundary switch can wrap a paginated resource back to its first
-      // page on Android, which loses the accepted reading point. The
-      // generation-scoped locator guard below rejects and restores disallowed
-      // chapter/unit crossings without interfering with same-resource pages.
-      configuration.disablePageTurnsWhileScrolling = false
+      // Readium only consults this switch in scrolled layout, so a disabled
+      // chapter swipe there never moves the page; finishScrolledChapterSwipe
+      // reports the attempt. Paginated layout keeps the generation-scoped
+      // locator guard, which rejects and restores disallowed crossings.
+      configuration.disablePageTurnsWhileScrolling =
+        configuredNavigationPolicy.chapterTurnGesture == "disabled"
       if (
         publication.metadata.presentation.layout != EpubLayout.FIXED &&
         configuredTypographyProfile?.publisherStyles?.injectsProfileRules == true
@@ -1710,12 +1711,7 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       resource.close()
     } ?: return ""
     val document = data.toString(Charsets.UTF_8)
-    val escapedFragment = Regex.escape(fragment)
-    val expression = Regex(
-      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])$escapedFragment\\2[^>]*>.*?</\\1\\s*>",
-      setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
-    )
-    return expression.find(document)?.value ?: ""
+    return FootnoteLinkPolicy.targetHtml(document, fragment)
   }
 
   private fun startProgressObservation(
@@ -1880,6 +1876,37 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       return false
     }
     return true
+  }
+
+  /**
+   * Scrolled layout with chapter swipes disabled never turns the resource, so
+   * report the attempted crossing the way a rejected move would.
+   */
+  private fun finishScrolledChapterSwipe(offset: PointF) {
+    if (
+      effectiveReaderLayout() != "scrolled" ||
+      configuredNavigationPolicy.chapterTurnGesture != "disabled" ||
+      configuredNavigationPolicy.inputSuppressed ||
+      currentReaderState != StableReaderState.READY ||
+      isProgrammaticNavigationInFlight ||
+      gestureRollbackTarget != null
+    ) return
+    val configuration = navigationUnitBoundaryConfiguration ?: return
+    val current = acceptedNavigationUnitMatch ?: return
+    val locator = acceptedUserLocation ?: navigator?.currentLocator?.value ?: return
+    val density = resources.displayMetrics.density.takeIf { it > 0f } ?: 1f
+    val direction = NavigationUnitBoundaryPolicy.chapterSwipeDirection(
+      (offset.x / density).toDouble(),
+      (offset.y / density).toDouble(),
+      effectiveReadingProgression(),
+    ) ?: return
+    val adjacentIndex = current.index + if (direction == "forward") 1 else -1
+    val adjacent = configuration.units.getOrNull(adjacentIndex) ?: return
+    emitNavigationUnitBoundary(
+      current,
+      ReaderNavigationUnitBoundaryMatch(adjacentIndex, current.precision, adjacent),
+      locator,
+    )
   }
 
   private fun emitNavigationUnitBoundary(

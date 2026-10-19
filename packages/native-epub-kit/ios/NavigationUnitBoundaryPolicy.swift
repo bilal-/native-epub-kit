@@ -139,6 +139,27 @@ struct ReaderNavigationUnitBoundaryMatch: Equatable, Sendable {
 
 enum NavigationUnitBoundaryPolicy {
   private static let progressionEpsilon = 1e-9
+  /// Minimum horizontal travel, in points or density-independent pixels.
+  static let chapterSwipeMinimumDistance = 48.0
+  /// Horizontal travel must dominate vertical travel by this ratio.
+  static let chapterSwipeDominance = 2.0
+
+  /// Direction of a horizontal drag that would turn to an adjacent resource
+  /// in scrolled layout, or nil for taps, nudges, and vertical scrolling.
+  static func chapterSwipeDirection(
+    dx: Double,
+    dy: Double,
+    readingProgression: String
+  ) -> String? {
+    guard
+      abs(dx) >= chapterSwipeMinimumDistance,
+      abs(dx) >= abs(dy) * chapterSwipeDominance
+    else {
+      return nil
+    }
+    let leftward = dx < 0
+    return leftward == (readingProgression != "rtl") ? "forward" : "backward"
+  }
 
   static func match(
     configuration: ReaderNavigationUnitBoundaryConfiguration,

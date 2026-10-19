@@ -1,0 +1,54 @@
+appId: com.bilal.nativeepubkit.example
+---
+- stopApp
+- openLink: ${METRO_DEEP_LINK}
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- setOrientation: PORTRAIT
+- extendedWaitUntil:
+    visible: '.*ready.*owned 1.*emissions 1.*'
+    timeout: 30000
+- tapOn:
+    id: 'fixture-toc'
+- extendedWaitUntil:
+    visible: '.*publication Nested and Fragment TOC Fixture.*'
+    timeout: 30000
+- extendedWaitUntil:
+    visible: '.*policy scrolled/ltr.*chapter disabled.*boundary navigation-unit/(continuous|position|resource).*'
+    timeout: 30000
+
+# Programmatic navigation still crosses resources.
+- tapOn:
+    id: 'next-resource'
+- extendedWaitUntil:
+    visible: '.*next-resource succeeded.*part-2.*'
+    timeout: 15000
+- tapOn:
+    id: 'reader-focus'
+- assertVisible:
+    id: 'reader-focus-mode'
+- extendedWaitUntil:
+    visible: 'Part two'
+    timeout: 15000
+- waitForAnimationToEnd
+
+# A disabled chapter swipe in scrolled layout never shows the adjacent resource,
+# and the attempt is still reported to the consumer.
+- swipe:
+    start: '18%,50%'
+    end: '82%,50%'
+    duration: 500
+- assertNotVisible: 'Part one'
+- waitForAnimationToEnd
+- assertNotVisible: 'Part one'
+- assertVisible: 'Part two'
+- tapOn:
+    id: 'reader-unfocus'
+- extendedWaitUntil:
+    visible: '.*event start/backward/unit Part two→Part one (continuous|position|resource).*'
+    timeout: 15000
+- takeScreenshot: navigation-boundary-swipe-scrolled-chapter-disabled
