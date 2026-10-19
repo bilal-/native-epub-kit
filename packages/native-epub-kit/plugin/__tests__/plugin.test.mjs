@@ -16,6 +16,7 @@ const require = createRequire(import.meta.url);
 const {
   addCoreLibraryDesugaring,
   addReadiumPods,
+  addXcodeCompatibility,
   buildFontManifest,
   MAXIMUM_FONT_FACES,
   normalizeFontDefinitions,
@@ -60,6 +61,44 @@ end
     );
     expect(once).not.toContain('File.join(__dir__');
     expect(once).not.toContain('/workspace/app/node_modules');
+  });
+
+  it('adds Xcode 27.1 compatibility to the Podfile idempotently', () => {
+    const initial = `podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
+
+target 'Example' do
+  use_expo_modules!
+
+  post_install do |installer|
+    react_native_post_install(installer)
+  end
+end
+`;
+    const once = addXcodeCompatibility(initial, { minimumIos: '16.4' });
+    const twice = addXcodeCompatibility(once, { minimumIos: '16.4' });
+
+    expect(twice).toBe(once);
+    expect(once.match(/@generated begin native-epub-kit Xcode compatibility/g)).toHaveLength(1);
+    expect(once.match(/@generated begin native-epub-kit deployment target floor/g)).toHaveLength(1);
+    expect(once).toContain("podfile_properties['ios.deploymentTarget'] || '16.4'");
+    expect(once.indexOf('Xcode compatibility')).toBeGreaterThan(
+      once.indexOf('podfile_properties =')
+    );
+    expect(once.indexOf('deployment target floor')).toBeGreaterThan(
+      once.indexOf('post_install do |installer|')
+    );
+    expect(once.indexOf('deployment target floor')).toBeLessThan(
+      once.indexOf('react_native_post_install')
+    );
+  });
+
+  it('fails clearly when the Podfile lacks Expo template anchors', () => {
+    expect(() =>
+      addXcodeCompatibility("target 'Example' do\nend\n", { minimumIos: '16.4' })
+    ).toThrow(/podfile_properties/);
+    expect(() =>
+      addXcodeCompatibility('podfile_properties = {}\n', { minimumIos: '16.4' })
+    ).toThrow(/post_install/);
   });
 
   it('enables Android core-library desugaring idempotently', () => {
