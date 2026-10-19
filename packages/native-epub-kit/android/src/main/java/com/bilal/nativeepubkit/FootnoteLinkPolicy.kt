@@ -2,6 +2,8 @@ package com.bilal.nativeepubkit
 
 import java.text.Normalizer
 import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -247,4 +249,71 @@ internal object FootnoteLinkPolicy {
       Regex("^(?:fn|footnote|note)(?:[-_.:]|\\d)", RegexOption.IGNORE_CASE)
         .containsMatchIn(parts.fragment)
   }
+
+  /**
+   * Returns the HTML a footnote link targets. Notes whose id element is empty,
+   * such as `<a id="note"></a><p>text</p>` from page-layout exports, resolve to
+   * the content that immediately follows the anchor.
+   */
+  fun targetHtml(document: String, fragment: String): String {
+    if (fragment.isEmpty()) return ""
+    val id = Pattern.quote(fragment)
+    val opening = firstMatch(
+      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])$id\\2[^>]*?(/?)>",
+      document,
+      0,
+    ) ?: return ""
+    var contentStart = opening.end()
+    if (opening.group(3).isEmpty()) {
+      val tag = Pattern.quote(opening.group(1))
+      val closing = firstMatch("</$tag\\s*>", document, contentStart) ?: return ""
+      if (!isBlankHtml(document.substring(contentStart, closing.start()))) {
+        return document.substring(opening.start(), closing.end())
+      }
+      contentStart = closing.end()
+    }
+    return followingHtml(document, contentStart)
+  }
+
+  private const val BLOCK_TAGS = "p|div|li|blockquote|aside|section|dl|ol|ul|table|h[1-6]"
+
+  private fun followingHtml(document: String, start: Int): String {
+    var position = start
+    anchoredMatch("(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+", document, position)?.let { position = it.end() }
+    anchoredMatch("<($BLOCK_TAGS)\\b[^>]*>", document, position)?.let { block ->
+      val tag = block.group(1)
+      val closing = firstMatch("</$tag\\s*>", document, block.end()) ?: return ""
+      return document.substring(position, closing.end())
+    }
+    val boundary = firstMatch(
+      "</?(?:$BLOCK_TAGS|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*\\bid\\s*=",
+      document,
+      position,
+    )
+    val inline = document.substring(position, boundary?.start() ?: document.length).trim()
+    return if (isBlankHtml(inline)) "" else inline
+  }
+
+  private fun isBlankHtml(html: String): Boolean {
+    if (Regex("<(?:img|svg|image)\\b", RegexOption.IGNORE_CASE).containsMatchIn(html)) return false
+    return html
+      .replace(Regex("<[^>]*>"), "")
+      .replace(Regex("&nbsp;|&#160;"), "")
+      .trim { it.isWhitespace() || it == '\u00A0' }
+      .isEmpty()
+  }
+
+  private fun firstMatch(pattern: String, text: String, from: Int): Matcher? {
+    val matcher = compiled(pattern).matcher(text)
+    return if (matcher.find(from)) matcher else null
+  }
+
+  private fun anchoredMatch(pattern: String, text: String, at: Int): Matcher? {
+    val matcher = compiled(pattern).matcher(text)
+    matcher.region(at, text.length)
+    return if (matcher.lookingAt()) matcher else null
+  }
+
+  private fun compiled(pattern: String): Pattern =
+    Pattern.compile(pattern, Pattern.CASE_INSENSITIVE or Pattern.DOTALL)
 }

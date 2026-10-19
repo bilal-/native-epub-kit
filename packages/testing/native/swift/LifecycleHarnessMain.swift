@@ -289,6 +289,14 @@ private struct FootnoteLinkPolicyContract: Decodable {
   let maximumExternalSchemes: Int
   let footnoteCases: [FootnotePolicyCase]
   let linkCases: [LinkPolicyCase]
+  let contentCases: [FootnoteContentCase]
+}
+
+private struct FootnoteContentCase: Decodable {
+  let name: String
+  let fragment: String
+  let document: String
+  let expectedHtml: String
 }
 
 private struct FootnotePolicyCase: Decodable {
@@ -965,6 +973,16 @@ private enum LifecycleHarnessMain {
       } catch {
         try expect(testCase.expectedError == true, "\(testCase.name) unexpected error \(error)")
       }
+    }
+    for testCase in footnoteLinkContract.contentCases {
+      let html = FootnoteLinkPolicy.targetHTML(
+        document: testCase.document,
+        fragment: testCase.fragment
+      )
+      try expect(
+        html == testCase.expectedHtml,
+        "\(testCase.name) footnote content: \(html)"
+      )
     }
     for testCase in footnoteLinkContract.linkCases {
       do {

@@ -1710,12 +1710,7 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       resource.close()
     } ?: return ""
     val document = data.toString(Charsets.UTF_8)
-    val escapedFragment = Regex.escape(fragment)
-    val expression = Regex(
-      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])$escapedFragment\\2[^>]*>.*?</\\1\\s*>",
-      setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
-    )
-    return expression.find(document)?.value ?: ""
+    return FootnoteLinkPolicy.targetHtml(document, fragment)
   }
 
   private fun startProgressObservation(

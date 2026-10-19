@@ -313,4 +313,105 @@ enum FootnoteLinkPolicy {
         options: [.regularExpression, .caseInsensitive]
       ) != nil
   }
+
+  /// Returns the HTML a footnote link targets. Notes whose id element is
+  /// empty, such as `<a id="note"></a><p>text</p>` from page-layout exports,
+  /// resolve to the content that immediately follows the anchor.
+  static func targetHTML(document: String, fragment: String) -> String {
+    guard !fragment.isEmpty else { return "" }
+    let text = document as NSString
+    let id = NSRegularExpression.escapedPattern(for: fragment)
+    guard
+      let opening = firstMatch(
+        "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])\(id)\\2[^>]*?(/?)>",
+        in: text,
+        from: 0
+      )
+    else {
+      return ""
+    }
+    var contentStart = opening.range.upperBound
+    if text.substring(with: opening.range(at: 3)).isEmpty {
+      let tag = NSRegularExpression.escapedPattern(for: text.substring(with: opening.range(at: 1)))
+      guard let closing = firstMatch("</\(tag)\\s*>", in: text, from: contentStart) else {
+        return ""
+      }
+      let inner = text.substring(
+        with: NSRange(location: contentStart, length: closing.range.location - contentStart)
+      )
+      if !isBlankHTML(inner) {
+        return text.substring(
+          with: NSRange(
+            location: opening.range.location,
+            length: closing.range.upperBound - opening.range.location
+          )
+        )
+      }
+      contentStart = closing.range.upperBound
+    }
+    return followingHTML(in: text, from: contentStart)
+  }
+
+  private static let blockTags = "p|div|li|blockquote|aside|section|dl|ol|ul|table|h[1-6]"
+
+  private static func followingHTML(in text: NSString, from start: Int) -> String {
+    var position = start
+    if let gap = anchoredMatch("(?:\\s+|<br\\b[^>]*>|<!--.*?-->)+", in: text, at: position) {
+      position = gap.range.upperBound
+    }
+    if let block = anchoredMatch("<(\(blockTags))\\b[^>]*>", in: text, at: position) {
+      let tag = text.substring(with: block.range(at: 1))
+      guard let closing = firstMatch("</\(tag)\\s*>", in: text, from: block.range.upperBound) else {
+        return ""
+      }
+      return text.substring(
+        with: NSRange(location: position, length: closing.range.upperBound - position)
+      )
+    }
+    let boundary = firstMatch(
+      "</?(?:\(blockTags)|td|th|dd|body)\\b[^>]*>|<a\\b[^>]*\\bid\\s*=",
+      in: text,
+      from: position
+    )
+    let end = boundary?.range.location ?? text.length
+    let inline = text.substring(with: NSRange(location: position, length: end - position))
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+    return isBlankHTML(inline) ? "" : inline
+  }
+
+  private static func isBlankHTML(_ html: String) -> Bool {
+    if html.range(of: "<(?:img|svg|image)\\b", options: [.regularExpression, .caseInsensitive]) != nil {
+      return false
+    }
+    return html
+      .replacingOccurrences(of: "<[^>]*>", with: "", options: .regularExpression)
+      .replacingOccurrences(of: "&nbsp;|&#160;", with: "", options: .regularExpression)
+      .trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: "\u{00A0}")))
+      .isEmpty
+  }
+
+  private static func firstMatch(
+    _ pattern: String,
+    in text: NSString,
+    from location: Int
+  ) -> NSTextCheckingResult? {
+    try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators])
+      .firstMatch(
+        in: text as String,
+        range: NSRange(location: location, length: text.length - location)
+      )
+  }
+
+  private static func anchoredMatch(
+    _ pattern: String,
+    in text: NSString,
+    at location: Int
+  ) -> NSTextCheckingResult? {
+    try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators])
+      .firstMatch(
+        in: text as String,
+        options: .anchored,
+        range: NSRange(location: location, length: text.length - location)
+      )
+  }
 }

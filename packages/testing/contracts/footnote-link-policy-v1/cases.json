@@ -187,5 +187,49 @@
       "href": "https://example.com",
       "expectedError": true
     }
+  ],
+  "contentCases": [
+    {
+      "name": "element-with-content-is-returned-unchanged",
+      "fragment": "note-1",
+      "document": "<body><aside id=\"note-1\" epub:type=\"footnote\"><p>Note one.</p></aside><p>Later.</p></body>",
+      "expectedHtml": "<aside id=\"note-1\" epub:type=\"footnote\"><p>Note one.</p></aside>"
+    },
+    {
+      "name": "empty-anchor-before-block-returns-following-block",
+      "fragment": "footnote2",
+      "document": "<p>Prior note.</p>\n<br/><a id=\"footnote2\"></a><p class=\"p13\" dir=\"rtl\"><a href=\"chapter-11.xhtml#footnote-ref2\"><sup>2</sup></a><span> سہو کتابت</span></p>\n<br/><a id=\"footnote3\"></a><p>Third.</p>",
+      "expectedHtml": "<p class=\"p13\" dir=\"rtl\"><a href=\"chapter-11.xhtml#footnote-ref2\"><sup>2</sup></a><span> سہو کتابت</span></p>"
+    },
+    {
+      "name": "self-closing-anchor-before-block-returns-following-block",
+      "fragment": "fn4",
+      "document": "<a id=\"fn4\"/>\n<div class=\"note\"><p>Fourth.</p></div><p>Unrelated.</p>",
+      "expectedHtml": "<div class=\"note\"><p>Fourth.</p></div>"
+    },
+    {
+      "name": "empty-anchor-inside-paragraph-returns-rest-of-paragraph",
+      "fragment": "fn5",
+      "document": "<p><a id=\"fn5\"></a>Fifth <em>note</em>.</p><p>Unrelated.</p>",
+      "expectedHtml": "Fifth <em>note</em>."
+    },
+    {
+      "name": "empty-anchor-without-following-content-is-empty",
+      "fragment": "fn6",
+      "document": "<p>Body.</p><a id=\"fn6\"></a></body>",
+      "expectedHtml": ""
+    },
+    {
+      "name": "missing-fragment-is-empty",
+      "fragment": "absent",
+      "document": "<p id=\"present\">Present.</p>",
+      "expectedHtml": ""
+    },
+    {
+      "name": "fragment-is-matched-literally",
+      "fragment": "a.b",
+      "document": "<p id=\"aXb\">Wrong.</p><p id=\"a.b\">Right.</p>",
+      "expectedHtml": "<p id=\"a.b\">Right.</p>"
+    }
   ]
 }

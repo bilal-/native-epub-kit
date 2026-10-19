@@ -2041,23 +2041,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     else {
       return ""
     }
-    let fragment = NSRegularExpression.escapedPattern(for: String(hrefParts[1]))
-    let pattern =
-      "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*\\bid\\s*=\\s*(['\"])\(fragment)\\2[^>]*>.*?</\\1\\s*>"
-    guard
-      let expression = try? NSRegularExpression(
-        pattern: pattern,
-        options: [.caseInsensitive, .dotMatchesLineSeparators]
-      ),
-      let match = expression.firstMatch(
-        in: document,
-        range: NSRange(document.startIndex..., in: document)
-      ),
-      let range = Range(match.range, in: document)
-    else {
-      return ""
-    }
-    return String(document[range])
+    return FootnoteLinkPolicy.targetHTML(document: document, fragment: String(hrefParts[1]))
   }
 
   private func plainText(fromHTML html: String) -> String {
