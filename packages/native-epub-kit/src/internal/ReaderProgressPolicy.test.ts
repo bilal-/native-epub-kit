@@ -411,6 +411,30 @@ describe('progress across the scrollable range', () => {
     expect(result?.overallProgress).toBeCloseTo(1, 10);
   });
 
+  it('maps both edges through the resource when the top total progression is position-quantized', () => {
+    // Android: totalProgression snaps to the current position; progression is exact.
+    const top = {
+      href: 'text/c.xhtml',
+      locations: { position: 6, progression: 0.733, totalProgression: 5 / 6 },
+      type: 'application/xhtml+xml',
+    };
+    const result = calculateReaderProgress(
+      event({
+        locator: top,
+        precision: 'position',
+        position: 6,
+        totalPositions: 6,
+        visibleRange: {
+          end: { ...top, locations: { position: 6, progression: 0.9997 } },
+          start: top,
+        },
+      }),
+      positioned
+    );
+    expect(result?.chapterProgress).toBeGreaterThan(0.999);
+    expect(result?.overallProgress).toBeGreaterThan(0.999);
+  });
+
   it('reports 100% when the whole chapter fits on one screen', () => {
     const result = calculateReaderProgress(
       event({

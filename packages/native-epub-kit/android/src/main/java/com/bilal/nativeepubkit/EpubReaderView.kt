@@ -2145,7 +2145,8 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
   /**
    * The locator at the bottom of the viewport, from the share of the resource the
    * viewport shows. Readium reports only the top, which can never reach the end of a
-   * resource; the share is measured once per resource, layout, and viewport size.
+   * resource. The share is re-measured after each event because the page may still be
+   * laying out; a changed measurement re-emits the current location.
    */
   private fun visibleEndLocator(locator: Locator, layout: String): Locator? {
     val top = locator.locations.progression ?: return null
@@ -2158,30 +2159,36 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       width,
       height,
     ).joinToString("|")
-    if (key == visibleFractionKey) {
-      val fraction = visibleFraction ?: return null
-      return locator.copyWithLocations(
-        progression = (top + fraction).coerceAtMost(1.0),
-        totalProgression = null,
-      )
-    }
-    visibleFractionKey = key
-    visibleFraction = null
-    visibleFractionJob?.cancel()
-    visibleFractionJob = scope.launch {
-      val raw = runCatching {
-        currentNavigator.evaluateJavascript(
-          if (layout == "scrolled") VISIBLE_HEIGHT_FRACTION_SCRIPT else VISIBLE_WIDTH_FRACTION_SCRIPT
-        )
-      }.getOrNull()
-      val fraction = raw?.trim('"')?.toDoubleOrNull()?.takeIf { it.isFinite() && it > 0.0 }
-      if (visibleFractionKey != key || fraction == null) return@launch
-      visibleFraction = fraction.coerceAtMost(1.0)
+    if (key != visibleFractionKey) {
+      visibleFractionKey = key
+      visibleFraction = null
+      visibleFractionJob?.cancel()
       visibleFractionJob = null
-      // Re-emit so the current position reflects the measured viewport.
-      probeProgress()
     }
-    return null
+    if (visibleFractionJob == null) {
+      visibleFractionJob = scope.launch {
+        val raw = runCatching {
+          currentNavigator.evaluateJavascript(
+            if (layout == "scrolled") VISIBLE_HEIGHT_FRACTION_SCRIPT else VISIBLE_WIDTH_FRACTION_SCRIPT
+          )
+        }.getOrNull()
+        val measured = raw?.trim('"')?.toDoubleOrNull()?.takeIf { it.isFinite() && it > 0.0 }
+        if (visibleFractionKey != key) return@launch
+        visibleFractionJob = null
+        if (measured == null) return@launch
+        val fraction = measured.coerceAtMost(1.0)
+        val previous = visibleFraction
+        visibleFraction = fraction
+        if (previous == null || kotlin.math.abs(previous - fraction) > VISIBLE_FRACTION_TOLERANCE) {
+          probeProgress()
+        }
+      }
+    }
+    val fraction = visibleFraction ?: return null
+    return locator.copyWithLocations(
+      progression = (top + fraction).coerceAtMost(1.0),
+      totalProgression = null,
+    )
   }
 
   private fun emitStableLocation(
@@ -3953,6 +3960,7 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     const val VISIBLE_WIDTH_FRACTION_SCRIPT =
       "(() => { const e = document.scrollingElement || document.documentElement; " +
         "return e.scrollWidth > 0 ? String(window.innerWidth / e.scrollWidth) : ''; })()"
+    const val VISIBLE_FRACTION_TOLERANCE = 0.001
     const val SELECTION_ACTION_ID_BASE = 0x4E450000
     const val SELECTION_ACTION_MODE_HIDE_MILLISECONDS = 3_000L
     const val SELECTION_ACTION_MODE_REHIDE_MILLISECONDS = 2_000L

@@ -292,39 +292,41 @@ function deriveChapterProgress(
 }
 
 /**
- * The share of the publication visible on screen, when the native view reports the
- * bottom of the viewport in the same resource as its top.
+ * The top and bottom of the viewport as total progression, when the native view reports
+ * the bottom in the same resource as the top. iOS reports both as total progression.
+ * Android reports the bottom only within the resource, and its top total progression is
+ * position-quantized, so both edges are mapped through the resource's interval instead.
  */
-function visibleSpan(
+function visibleTotals(
   location: ReaderLocationEvent,
   anchor: Locator,
   navigation: NavigationUnitDerivationResult
-): number | undefined {
+): { bottom: number; top: number } | undefined {
   const end = location.visibleRange?.end;
   if (!end) return undefined;
   const resource = normalizeNavigationResourceHref(anchor.href);
   if (normalizeNavigationResourceHref(end.href) !== resource) return undefined;
-  const top = anchor.locations?.totalProgression;
-  const bottom = end.locations?.totalProgression;
-  let span: number | undefined;
-  if (top !== undefined && bottom !== undefined) {
-    span = bottom - top;
-  } else {
-    // Scale the resource-local span by the resource's share of the publication.
+  let top = anchor.locations?.totalProgression;
+  let bottom = end.locations?.totalProgression;
+  if (bottom === undefined) {
     const interval = navigation.resources.find((entry) => entry.href === resource);
     const topLocal = anchor.locations?.progression;
     const bottomLocal = end.locations?.progression;
+    const start = interval?.startTotalProgression;
+    const finish = interval?.endTotalProgression;
     if (
-      interval?.startTotalProgression !== undefined &&
-      interval.endTotalProgression !== undefined &&
-      topLocal !== undefined &&
-      bottomLocal !== undefined
+      start === undefined ||
+      finish === undefined ||
+      topLocal === undefined ||
+      bottomLocal === undefined
     ) {
-      span =
-        (bottomLocal - topLocal) * (interval.endTotalProgression - interval.startTotalProgression);
+      return undefined;
     }
+    top = start + topLocal * (finish - start);
+    bottom = start + bottomLocal * (finish - start);
   }
-  return span !== undefined && Number.isFinite(span) && span > 0 ? Math.min(1, span) : undefined;
+  if (top === undefined || !Number.isFinite(top) || !Number.isFinite(bottom)) return undefined;
+  return bottom > top ? { bottom: Math.min(1, bottom), top } : undefined;
 }
 
 /**
@@ -333,14 +335,15 @@ function visibleSpan(
  * bottom of the viewport reaches the end, and linear in between.
  */
 function scrollableRangeProgress(
-  top: number,
-  screen: number,
+  visible: { bottom: number; top: number },
   unit: NavigationUnitDerivationResult['units'][number],
   chapterPrecision: ProgressPrecision
 ): { chapter?: number; overall: number } {
+  const { bottom, top } = visible;
+  const screen = bottom - top;
   const range = (start: number, end: number) => {
     const scrollable = end - start - screen;
-    if (scrollable <= progressionEpsilon) return top + screen >= end - progressionEpsilon ? 1 : 0;
+    if (scrollable <= progressionEpsilon) return bottom >= end - progressionEpsilon ? 1 : 0;
     return clampProgress((top - start) / scrollable);
   };
   const start = unit.startTotalProgression;
@@ -401,11 +404,11 @@ export function calculateReaderProgress(
     overall.value,
     position
   );
-  const screen = visibleSpan(location, anchor, navigation);
+  const visible = visibleTotals(location, anchor, navigation);
   const scrolled =
-    screen === undefined
+    visible === undefined
       ? undefined
-      : scrollableRangeProgress(overall.value, screen, selected.unit, chapter.precision);
+      : scrollableRangeProgress(visible, selected.unit, chapter.precision);
   return {
     ...location,
     chapterProgress: scrolled?.chapter ?? chapter.value,
