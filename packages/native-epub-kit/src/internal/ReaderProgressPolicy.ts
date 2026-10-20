@@ -291,6 +291,68 @@ function deriveChapterProgress(
   };
 }
 
+/**
+ * The share of the publication visible on screen, when the native view reports the
+ * bottom of the viewport in the same resource as its top.
+ */
+function visibleSpan(
+  location: ReaderLocationEvent,
+  anchor: Locator,
+  navigation: NavigationUnitDerivationResult
+): number | undefined {
+  const end = location.visibleRange?.end;
+  if (!end) return undefined;
+  const resource = normalizeNavigationResourceHref(anchor.href);
+  if (normalizeNavigationResourceHref(end.href) !== resource) return undefined;
+  const top = anchor.locations?.totalProgression;
+  const bottom = end.locations?.totalProgression;
+  let span: number | undefined;
+  if (top !== undefined && bottom !== undefined) {
+    span = bottom - top;
+  } else {
+    // Scale the resource-local span by the resource's share of the publication.
+    const interval = navigation.resources.find((entry) => entry.href === resource);
+    const topLocal = anchor.locations?.progression;
+    const bottomLocal = end.locations?.progression;
+    if (
+      interval?.startTotalProgression !== undefined &&
+      interval.endTotalProgression !== undefined &&
+      topLocal !== undefined &&
+      bottomLocal !== undefined
+    ) {
+      span =
+        (bottomLocal - topLocal) * (interval.endTotalProgression - interval.startTotalProgression);
+    }
+  }
+  return span !== undefined && Number.isFinite(span) && span > 0 ? Math.min(1, span) : undefined;
+}
+
+/**
+ * Locators mark the top of the viewport, which can never reach the end of a chapter or
+ * book. Measure against the scrollable range instead: 0 at the very top, 1 when the
+ * bottom of the viewport reaches the end, and linear in between.
+ */
+function scrollableRangeProgress(
+  top: number,
+  screen: number,
+  unit: NavigationUnitDerivationResult['units'][number],
+  chapterPrecision: ProgressPrecision
+): { chapter?: number; overall: number } {
+  const range = (start: number, end: number) => {
+    const scrollable = end - start - screen;
+    if (scrollable <= progressionEpsilon) return top + screen >= end - progressionEpsilon ? 1 : 0;
+    return clampProgress((top - start) / scrollable);
+  };
+  const start = unit.startTotalProgression;
+  const end = unit.endTotalProgression;
+  return {
+    ...(chapterPrecision === 'continuous' && start !== undefined && end !== undefined && end > start
+      ? { chapter: range(start, end) }
+      : {}),
+    overall: range(0, 1),
+  };
+}
+
 function identitiesMatch(
   location: ReaderLocationEvent,
   navigation: NavigationUnitDerivationResult
@@ -339,11 +401,16 @@ export function calculateReaderProgress(
     overall.value,
     position
   );
+  const screen = visibleSpan(location, anchor, navigation);
+  const scrolled =
+    screen === undefined
+      ? undefined
+      : scrollableRangeProgress(overall.value, screen, selected.unit, chapter.precision);
   return {
     ...location,
-    chapterProgress: chapter.value,
+    chapterProgress: scrolled?.chapter ?? chapter.value,
     navigationUnit: parseNavigationUnit(selected.unit),
-    overallProgress: overall.value,
+    overallProgress: scrolled?.overall ?? overall.value,
     ...(position === undefined ? {} : { position }),
     precision: leastPrecise(location.precision, overall.precision, chapter.precision),
     ...(totalPositions === undefined ? {} : { totalPositions }),

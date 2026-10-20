@@ -1625,8 +1625,32 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
       precision: precision,
       overallProgress: overallProgress,
       position: locator.locations.position,
-      totalPositions: totalPositionCount
+      totalPositions: totalPositionCount,
+      visibleEndPayload: visibleEndLocator(locator: locator, viewport: viewport)
+        .flatMap { jsonObject(for: $0) }
     )
+  }
+
+  /// The locator at the bottom of the viewport, when one resource fills it. Lets
+  /// progress reach 100% at the end of a resource rather than stopping a screen short.
+  private func visibleEndLocator(locator: Locator, viewport: NavigatorViewport?) -> Locator? {
+    guard
+      let viewport,
+      viewport.resources.count == 1,
+      let resource = viewport.resources.first,
+      resourcePathsMatch(locator.href, resource.href),
+      let top = locator.locations.progression,
+      let totalTop = locator.locations.totalProgression
+    else {
+      return nil
+    }
+    let resourceSpan = resource.progression.upperBound - resource.progression.lowerBound
+    let totalSpan = viewport.progression.upperBound - viewport.progression.lowerBound
+    guard resourceSpan > 0, totalSpan > 0 else { return nil }
+    return locator.copy(locations: {
+      $0.progression = min(1, top + resourceSpan)
+      $0.totalProgression = min(1, totalTop + totalSpan)
+    })
   }
 
   private func progressLocator(
@@ -1671,7 +1695,8 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     precision: String,
     overallProgress: Double,
     position: Int?,
-    totalPositions: Int?
+    totalPositions: Int?,
+    visibleEndPayload: [String: Any]? = nil
   ) {
     let stableReason = StableReaderLocationReason(
       rawValue: reason == "probe" ? "programmatic" : reason
@@ -1700,6 +1725,9 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     }
     if let totalPositions, totalPositions > 0 {
       payload["totalPositions"] = totalPositions
+    }
+    if let visibleEndPayload {
+      payload["visibleRange"] = ["end": visibleEndPayload, "start": locatorPayload]
     }
     latestStableLocation = payload
     onLocationChange(payload)

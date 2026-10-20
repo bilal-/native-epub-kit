@@ -333,6 +333,81 @@ describe('reader progress membership and boundary values', () => {
   });
 });
 
+describe('progress across the scrollable range', () => {
+  // Chapter C spans total progression 4/6..1 and the screen shows 0.1 of the book.
+  const screen = 0.1;
+  const at = (top: number) =>
+    calculateReaderProgress(
+      event({
+        locator: position('text/c.xhtml', 5, top),
+        visibleRange: {
+          end: position('text/c.xhtml', 6, top + screen),
+          start: position('text/c.xhtml', 5, top),
+        },
+      }),
+      positioned
+    );
+
+  it('reports 100% for the chapter and book when scrolled to the very bottom', () => {
+    const result = at(1 - screen);
+    expect(result?.navigationUnit.title).toBe('Chapter C');
+    expect(result?.chapterProgress).toBeCloseTo(1, 10);
+    expect(result?.overallProgress).toBeCloseTo(1, 10);
+  });
+
+  it('reports 0% for the chapter at its very top', () => {
+    expect(at(4 / 6)?.chapterProgress).toBeCloseTo(0, 10);
+  });
+
+  it('scales linearly between the top and the bottom of the chapter', () => {
+    const scrollable = 2 / 6 - screen;
+    expect(at(4 / 6 + scrollable / 2)?.chapterProgress).toBeCloseTo(0.5, 10);
+    expect(at(4 / 6 + scrollable / 4)?.chapterProgress).toBeCloseTo(0.25, 10);
+  });
+
+  it('derives the bottom from resource progression when total progression is absent', () => {
+    // Android reports the bottom of the viewport as progression within the resource.
+    const result = calculateReaderProgress(
+      event({
+        locator: {
+          href: 'text/c.xhtml',
+          locations: { position: 6, progression: 0.7, totalProgression: 4 / 6 + 0.7 / 3 },
+          type: 'application/xhtml+xml',
+        },
+        visibleRange: {
+          end: {
+            href: 'text/c.xhtml',
+            locations: { position: 6, progression: 1 },
+            type: 'application/xhtml+xml',
+          },
+          start: {
+            href: 'text/c.xhtml',
+            locations: { position: 6, progression: 0.7, totalProgression: 4 / 6 + 0.7 / 3 },
+            type: 'application/xhtml+xml',
+          },
+        },
+      }),
+      positioned
+    );
+    expect(result?.chapterProgress).toBeCloseTo(1, 10);
+    expect(result?.overallProgress).toBeCloseTo(1, 10);
+  });
+
+  it('reports 100% when the whole chapter fits on one screen', () => {
+    const result = calculateReaderProgress(
+      event({
+        locator: position('text/c.xhtml', 5, 4 / 6),
+        visibleRange: {
+          end: position('text/c.xhtml', 6, 1),
+          start: position('text/c.xhtml', 5, 4 / 6),
+        },
+      }),
+      positioned
+    );
+    expect(result?.chapterProgress).toBeCloseTo(1, 10);
+  });
+});
+
 describe('current and furthest progress controller utilities', () => {
   const enriched = (
     sequence: number,

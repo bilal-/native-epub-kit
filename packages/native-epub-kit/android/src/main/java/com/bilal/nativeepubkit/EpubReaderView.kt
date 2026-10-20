@@ -250,6 +250,9 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
   private var progressObservationJob: Job? = null
   private var publicationDataJob: Job? = null
   private var progressProbeJob: Job? = null
+  private var visibleFractionJob: Job? = null
+  private var visibleFractionKey: String? = null
+  private var visibleFraction: Double? = null
   private var navigationJob: Job? = null
   private var preferenceUpdateJob: Job? = null
   private var decorationRestoreJob: Job? = null
@@ -1440,6 +1443,10 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     publicationDataJob = null
     progressProbeJob?.cancel()
     progressProbeJob = null
+    visibleFractionJob?.cancel()
+    visibleFractionJob = null
+    visibleFractionKey = null
+    visibleFraction = null
     navigationJob?.cancel()
     navigationJob = null
     preferenceUpdateJob?.cancel()
@@ -2131,7 +2138,50 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       reason = reason,
       precision = precision,
       overallProgress = overallProgress,
+      visibleEnd = visibleEndLocator(locator, payload["layout"] as String),
     )
+  }
+
+  /**
+   * The locator at the bottom of the viewport, from the share of the resource the
+   * viewport shows. Readium reports only the top, which can never reach the end of a
+   * resource; the share is measured once per resource, layout, and viewport size.
+   */
+  private fun visibleEndLocator(locator: Locator, layout: String): Locator? {
+    val top = locator.locations.progression ?: return null
+    val currentNavigator = navigator ?: return null
+    val key = listOf(
+      generation.value,
+      locator.href.toString(),
+      layout,
+      configuredPreferences,
+      width,
+      height,
+    ).joinToString("|")
+    if (key == visibleFractionKey) {
+      val fraction = visibleFraction ?: return null
+      return locator.copyWithLocations(
+        progression = (top + fraction).coerceAtMost(1.0),
+        totalProgression = null,
+      )
+    }
+    visibleFractionKey = key
+    visibleFraction = null
+    visibleFractionJob?.cancel()
+    visibleFractionJob = scope.launch {
+      val raw = runCatching {
+        currentNavigator.evaluateJavascript(
+          if (layout == "scrolled") VISIBLE_HEIGHT_FRACTION_SCRIPT else VISIBLE_WIDTH_FRACTION_SCRIPT
+        )
+      }.getOrNull()
+      val fraction = raw?.trim('"')?.toDoubleOrNull()?.takeIf { it.isFinite() && it > 0.0 }
+      if (visibleFractionKey != key || fraction == null) return@launch
+      visibleFraction = fraction.coerceAtMost(1.0)
+      visibleFractionJob = null
+      // Re-emit so the current position reflects the measured viewport.
+      probeProgress()
+    }
+    return null
   }
 
   private fun emitStableLocation(
@@ -2139,6 +2189,7 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     reason: String,
     precision: String,
     overallProgress: Double,
+    visibleEnd: Locator? = null,
   ) {
     val stableReason = StableReaderLocationReason.fromWireValue(
       if (reason == "probe") "programmatic" else reason
@@ -2160,6 +2211,12 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     )
     locator.locations.position?.let { payload["position"] = it }
     totalPositionCount?.takeIf { it > 0 }?.let { payload["totalPositions"] = it }
+    visibleEnd?.let {
+      payload["visibleRange"] = mapOf(
+        "end" to it.toJSON().toEventValue(),
+        "start" to locator.toJSON().toEventValue(),
+      )
+    }
     latestStableLocation = payload
     onLocationChange(payload)
   }
@@ -3888,6 +3945,14 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
       "org.readium.r2.navigator.R2BasicWebView",
       "org.readium.r2.navigator.R2WebView",
     )
+    // Readium measures progression as scroll offset over full content size, so the
+    // viewport's share of the content is viewport size over content size.
+    const val VISIBLE_HEIGHT_FRACTION_SCRIPT =
+      "(() => { const e = document.scrollingElement || document.documentElement; " +
+        "return e.scrollHeight > 0 ? String(window.innerHeight / e.scrollHeight) : ''; })()"
+    const val VISIBLE_WIDTH_FRACTION_SCRIPT =
+      "(() => { const e = document.scrollingElement || document.documentElement; " +
+        "return e.scrollWidth > 0 ? String(window.innerWidth / e.scrollWidth) : ''; })()"
     const val SELECTION_ACTION_ID_BASE = 0x4E450000
     const val SELECTION_ACTION_MODE_HIDE_MILLISECONDS = 3_000L
     const val SELECTION_ACTION_MODE_REHIDE_MILLISECONDS = 2_000L
