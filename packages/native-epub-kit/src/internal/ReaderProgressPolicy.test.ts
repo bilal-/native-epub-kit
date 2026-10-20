@@ -393,6 +393,24 @@ describe('progress across the scrollable range', () => {
     expect(result?.overallProgress).toBeCloseTo(1, 10);
   });
 
+  it('applies to position-precision events, as Android reports them', () => {
+    const result = calculateReaderProgress(
+      event({
+        locator: position('text/c.xhtml', 6, 1 - screen),
+        precision: 'position',
+        position: 6,
+        totalPositions: 6,
+        visibleRange: {
+          end: position('text/c.xhtml', 6, 1),
+          start: position('text/c.xhtml', 6, 1 - screen),
+        },
+      }),
+      positioned
+    );
+    expect(result?.chapterProgress).toBeCloseTo(1, 10);
+    expect(result?.overallProgress).toBeCloseTo(1, 10);
+  });
+
   it('reports 100% when the whole chapter fits on one screen', () => {
     const result = calculateReaderProgress(
       event({

@@ -346,7 +346,7 @@ function scrollableRangeProgress(
   const start = unit.startTotalProgression;
   const end = unit.endTotalProgression;
   return {
-    ...(chapterPrecision === 'continuous' && start !== undefined && end !== undefined && end > start
+    ...(chapterPrecision !== 'resource' && start !== undefined && end !== undefined && end > start
       ? { chapter: range(start, end) }
       : {}),
     overall: range(0, 1),
