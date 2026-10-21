@@ -4,6 +4,7 @@ native_dependencies = JSON.parse(File.read(File.join(__dir__, '..', 'native-depe
 
 Pod::Spec.new do |s|
   readium_version = native_dependencies.fetch('readiumSwift').fetch('integrationVersion')
+  transitive_pods = native_dependencies.fetch('readiumSwift').fetch('transitivePods')
 
   s.name = 'NativeEpubKit'
   s.version = '0.1.0'
@@ -23,6 +24,7 @@ Pod::Spec.new do |s|
   s.dependency 'ReadiumShared', "= #{readium_version}"
   s.dependency 'ReadiumStreamer', "= #{readium_version}"
   s.dependency 'ReadiumNavigator', "= #{readium_version}"
+  s.dependency 'SwiftSoup', "= #{transitive_pods.fetch('SwiftSoup')}"
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
 end

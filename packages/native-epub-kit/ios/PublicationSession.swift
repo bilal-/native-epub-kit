@@ -81,7 +81,9 @@ final class PublicationSession {
         onCreatePublication: { manifest, container, services in
           // The content iterator retries malformed XHTML indefinitely. Resource
           // search reports extraction errors and handles legacy multilingual EPUBs.
-          services.setSearchServiceFactory(StringSearchService.makeFactory())
+          services.setSearchServiceFactory(
+            StringSearchService.makeFactory(extractorFactory: ReaderSearchContentExtractorFactory())
+          )
             guard manifest.metadata.layout != .fixed,
               typographyProfile?.publisherStyles.injectsProfileRules == true,
               let typographyProfile
