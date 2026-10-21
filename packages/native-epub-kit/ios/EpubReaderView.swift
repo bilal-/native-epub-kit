@@ -2645,8 +2645,8 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     }
     let expectedGeneration = generation
     if let navigator, preferenceUpdateTask == nil, activeNavigationCommandId == nil,
-       let anchor = navigator.currentLocation, expectedGeneration == generation {
-      emitProgress(reason: "programmatic", preferredLocator: anchor)
+       navigator.currentLocation != nil, expectedGeneration == generation {
+      emitProgress(reason: "programmatic")
     }
     return [
       "ok": true,
