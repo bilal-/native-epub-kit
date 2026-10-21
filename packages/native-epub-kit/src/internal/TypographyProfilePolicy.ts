@@ -24,6 +24,7 @@ export const TYPOGRAPHY_GENERIC_FONT_FAMILIES = [
 const profileKeys = ['colors', 'defaultFontFamilies', 'publisherStyles', 'rules'] as const;
 const colorKeys = ['background', 'link', 'text'] as const;
 const ruleKeys = [
+  'borderTop',
   'color',
   'direction',
   'fontFamilies',
@@ -122,6 +123,9 @@ export function typographyProfileStylesheet(profile: ResolvedTypographyProfile):
     if (rule.fontWeight !== undefined) {
       declarations.push(`font-weight: ${rule.fontWeight} !important;`);
     }
+    if (rule.borderTop !== undefined) {
+      declarations.push('border-top: none !important;');
+    }
     lines.push(`${selector(rule.target)} { ${declarations.join(' ')} }`);
   }
   return lines.join('\n');
@@ -136,6 +140,11 @@ function normalizeRule(
   assertAllowedKeys(input, ruleKeys, `Typography rule ${index}`);
   const target = normalizeTarget(input.target, index);
   const rule: TypographyRule = { target };
+  if (input.borderTop !== undefined) {
+    if (input.borderTop !== 'none')
+      throw new TypeError(`Typography rule ${index} borderTop is invalid.`);
+    rule.borderTop = input.borderTop;
+  }
   if (input.color !== undefined) {
     rule.color = normalizeColor(input.color, `Typography rule ${index} color`);
   }
@@ -179,7 +188,8 @@ function normalizeRule(
     rule.fontFamilies === undefined &&
     rule.direction === undefined &&
     rule.lineHeight === undefined &&
-    rule.fontWeight === undefined
+    rule.fontWeight === undefined &&
+    rule.borderTop === undefined
   ) {
     throw new TypeError(`Typography rule ${index} must contain a declaration.`);
   }

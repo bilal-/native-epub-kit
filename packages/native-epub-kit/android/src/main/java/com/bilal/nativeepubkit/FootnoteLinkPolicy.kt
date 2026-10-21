@@ -256,7 +256,11 @@ internal object FootnoteLinkPolicy {
    * the content that immediately follows the anchor.
    */
   fun targetHtml(document: String, fragment: String): String {
-    if (fragment.isEmpty()) return ""
+    if (fragment.isEmpty()) {
+      val body = firstMatch("<body\\b[^>]*>", document, 0) ?: return ""
+      val end = firstMatch("</body\\s*>", document, body.end()) ?: return ""
+      return document.substring(body.end(), end.start())
+    }
     val id = Pattern.quote(fragment)
     val opening = firstMatch(
       "<([A-Za-z][A-Za-z0-9:_-]*)\\b[^>]*(?<![\\w:-])id\\s*=\\s*(['\"])$id\\2[^>]*?(/?)>",

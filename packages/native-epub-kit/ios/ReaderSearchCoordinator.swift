@@ -167,7 +167,8 @@ final class ReaderSearchCoordinator {
     }
     let serial = operationSerial
 
-    while session.pending.count < session.options.pageSize, !session.complete {
+    // Return the first available batch instead of scanning the book to fill a page.
+    while session.pending.isEmpty, !session.complete {
       guard let iterator = session.iterator else {
         close(session)
         self.session = nil

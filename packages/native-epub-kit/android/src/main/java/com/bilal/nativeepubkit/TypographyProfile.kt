@@ -44,6 +44,7 @@ internal data class TypographyRule(
   val direction: String?,
   val lineHeight: Double?,
   val fontWeight: Int?,
+  val borderTop: String? = null,
 )
 
 internal data class ResolvedTypographyProfile(
@@ -71,7 +72,7 @@ internal object TypographyProfilePolicy {
 
   private val PROFILE_KEYS = setOf("colors", "defaultFontFamilies", "publisherStyles", "rules")
   private val COLOR_KEYS = setOf("background", "link", "text")
-  private val RULE_KEYS = setOf("color", "direction", "fontFamilies", "fontWeight", "lineHeight", "target")
+  private val RULE_KEYS = setOf("borderTop", "color", "direction", "fontFamilies", "fontWeight", "lineHeight", "target")
   private val TARGET_KEYS = setOf("kind", "value")
   private val GENERIC_FAMILIES = setOf(
     "cursive", "fantasy", "monospace", "sans-serif", "serif", "system-ui"
@@ -140,6 +141,7 @@ internal object TypographyProfilePolicy {
       rule.direction?.let { declarations += "direction: $it !important;" }
       rule.lineHeight?.let { declarations += "line-height: ${formatNumber(it)} !important;" }
       rule.fontWeight?.let { declarations += "font-weight: $it !important;" }
+      rule.borderTop?.let { declarations += "border-top: none !important;" }
       lines += "${selector(rule.target)} { ${declarations.joinToString(" ")} }"
     }
     return lines.joinToString("\n")
@@ -181,11 +183,17 @@ internal object TypographyProfilePolicy {
     } else {
       null
     }
+    val borderTop = if (value.has("borderTop")) {
+      (value.opt("borderTop") as? String)?.takeIf { it == "none" }
+        ?: error("Invalid typography borderTop")
+    } else {
+      null
+    }
     require(
       color != null || fontFamilies != null || direction != null ||
-        lineHeight != null || fontWeight != null
+        lineHeight != null || fontWeight != null || borderTop != null
     )
-    return TypographyRule(target, color, fontFamilies, direction, lineHeight, fontWeight)
+    return TypographyRule(target, color, fontFamilies, direction, lineHeight, fontWeight, borderTop)
   }
 
   private fun resolveColors(value: JSONObject): ReaderColorProfile {

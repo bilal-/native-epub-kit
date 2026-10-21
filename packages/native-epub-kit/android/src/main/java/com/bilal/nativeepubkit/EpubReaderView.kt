@@ -1710,7 +1710,6 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
   private suspend fun resolvedFootnoteContent(link: Link, publication: Publication): String {
     val href = link.href.toString()
     val fragment = href.substringAfter('#', "")
-    if (fragment.isEmpty()) return ""
     val resource = publication.get(link) ?: return ""
     val data = try {
       resource.read(0L until MAXIMUM_FOOTNOTE_RESOURCE_BYTES).getOrNull()
@@ -2798,9 +2797,17 @@ class EpubReaderView(context: Context, appContext: AppContext) : ExpoView(contex
     )
   }
 
-  fun getCurrentLocationCommand(): Map<String, Any?> {
-    commandErrorResult()?.let { return it }
-    return mapOf("ok" to true, "value" to latestStableLocation)
+  suspend fun getCurrentLocationCommand(): Map<String, Any?> = withContext(Dispatchers.Main.immediate) {
+    commandErrorResult()?.let { return@withContext it }
+    val expectedGeneration = generation.value
+    val currentNavigator = navigator
+    if (currentNavigator != null && preferenceUpdateJob == null && activeNavigationCommandId == null) {
+      val anchor = currentNavigator.currentLocator.value
+      if (generation.isCurrent(expectedGeneration) && currentNavigator === navigator) {
+        emitProgress(anchor, "programmatic")
+      }
+    }
+    mapOf("ok" to true, "value" to latestStableLocation)
   }
 
   fun getCurrentSelectionCommand(): Map<String, Any?> {

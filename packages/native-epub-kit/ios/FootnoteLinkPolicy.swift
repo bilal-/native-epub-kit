@@ -318,8 +318,17 @@ enum FootnoteLinkPolicy {
   /// empty, such as `<a id="note"></a><p>text</p>` from page-layout exports,
   /// resolve to the content that immediately follows the anchor.
   static func targetHTML(document: String, fragment: String) -> String {
-    guard !fragment.isEmpty else { return "" }
     let text = document as NSString
+    if fragment.isEmpty {
+      guard let body = firstMatch("<body\\b[^>]*>", in: text, from: 0),
+            let end = firstMatch("</body\\s*>", in: text, from: body.range.upperBound) else {
+        return ""
+      }
+      return text.substring(with: NSRange(
+        location: body.range.upperBound,
+        length: end.range.location - body.range.upperBound
+      ))
+    }
     let id = NSRegularExpression.escapedPattern(for: fragment)
     guard
       let opening = firstMatch(

@@ -78,7 +78,10 @@ final class PublicationSession {
         openedPublication = try await publicationOpener.open(
           asset: asset,
           allowUserInteraction: true,
-          onCreatePublication: { manifest, container, _ in
+        onCreatePublication: { manifest, container, services in
+          // The content iterator retries malformed XHTML indefinitely. Resource
+          // search reports extraction errors and handles legacy multilingual EPUBs.
+          services.setSearchServiceFactory(StringSearchService.makeFactory())
             guard manifest.metadata.layout != .fixed,
               typographyProfile?.publisherStyles.injectsProfileRules == true,
               let typographyProfile

@@ -186,6 +186,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
       guardViewportResize(at: acceptedUserLocation)
     }
     navigator?.view.frame = bounds
+    preventImplicitScrollToTop()
     statusLabel.frame = bounds.insetBy(dx: 24, dy: 24)
     bringSubviewToFront(statusLabel)
   }
@@ -1180,6 +1181,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
   }
 
   func navigator(_ navigator: Navigator, locationDidChange locator: Locator) {
+    preventImplicitScrollToTop()
     guard let epubNavigator = navigator as? EPUBNavigatorViewController else {
       return
     }
@@ -1194,6 +1196,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     _ navigator: any ViewportObservingNavigator,
     viewportDidChange viewport: NavigatorViewport?
   ) {
+    preventImplicitScrollToTop()
     guard navigator === self.navigator else {
       return
     }
@@ -2065,7 +2068,7 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     publication: Publication
   ) async -> String {
     let hrefParts = link.href.split(separator: "#", maxSplits: 1, omittingEmptySubsequences: false)
-    guard hrefParts.count == 2, !hrefParts[1].isEmpty, let resource = publication.get(link) else {
+    guard let resource = publication.get(link) else {
       return ""
     }
     guard
@@ -2074,7 +2077,8 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     else {
       return ""
     }
-    return FootnoteLinkPolicy.targetHTML(document: document, fragment: String(hrefParts[1]))
+    let fragment = hrefParts.count == 2 ? String(hrefParts[1]) : ""
+    return FootnoteLinkPolicy.targetHTML(document: document, fragment: fragment)
   }
 
   private func plainText(fromHTML html: String) -> String {
@@ -2473,6 +2477,16 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     }
   }
 
+  private func preventImplicitScrollToTop() {
+    // Host controls can share the system status-bar tap region. Reading position
+    // must only change through reader navigation or gestures inside the content.
+    func visit(_ view: UIView) {
+      (view as? UIScrollView)?.scrollsToTop = false
+      view.subviews.forEach(visit)
+    }
+    if let view = navigator?.view { visit(view) }
+  }
+
   private func effectiveReaderLayout() -> String {
     if publication?.metadata.layout == .fixed {
       return "paginated"
@@ -2625,9 +2639,14 @@ final class EpubReaderView: ExpoView, EPUBNavigatorDelegate {
     )
   }
 
-  func getCurrentLocationCommand() -> [String: Any] {
+  func getCurrentLocationCommand() async -> [String: Any] {
     if let error = commandErrorResult() {
       return error
+    }
+    let expectedGeneration = generation
+    if let navigator, preferenceUpdateTask == nil, activeNavigationCommandId == nil,
+       let anchor = navigator.currentLocation, expectedGeneration == generation {
+      emitProgress(reason: "programmatic", preferredLocator: anchor)
     }
     return [
       "ok": true,

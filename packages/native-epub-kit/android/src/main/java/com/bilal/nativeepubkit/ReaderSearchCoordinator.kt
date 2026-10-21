@@ -158,7 +158,8 @@ internal class ReaderSearchCoordinator(
     session.pageInFlight = true
     val serial = operationSerial
     try {
-      while (session.pending.size < session.options.pageSize && !session.complete) {
+      // Deliver available matches before scanning more resources to fill a page.
+      while (session.pending.isEmpty() && !session.complete) {
         val job = scope.async {
           when (val result = session.iterator.next()) {
             is Try.Success -> NextOutcome.Locators(result.value?.locators)

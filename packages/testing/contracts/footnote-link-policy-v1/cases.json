@@ -8,40 +8,73 @@
       "policy": null,
       "href": "reading.xhtml#note-local",
       "semantic": true,
-      "expectedPolicy": { "mode": "semantic", "heuristicRules": [] },
-      "expectedDecision": { "decision": "emit", "classification": "semantic" }
+      "expectedPolicy": {
+        "mode": "semantic",
+        "heuristicRules": []
+      },
+      "expectedDecision": {
+        "decision": "emit",
+        "classification": "semantic"
+      }
     },
     {
       "name": "default-ordinary-link",
       "policy": null,
       "href": "ordinary.xhtml#target",
       "semantic": false,
-      "expectedPolicy": { "mode": "semantic", "heuristicRules": [] },
-      "expectedDecision": { "decision": "navigate" }
+      "expectedPolicy": {
+        "mode": "semantic",
+        "heuristicRules": []
+      },
+      "expectedDecision": {
+        "decision": "navigate"
+      }
     },
     {
       "name": "navigate-mode-does-not-intercept-semantic-note",
-      "policy": { "mode": "navigate" },
+      "policy": {
+        "mode": "navigate"
+      },
       "href": "reading.xhtml#note-local",
       "semantic": true,
-      "expectedPolicy": { "mode": "navigate", "heuristicRules": [] },
-      "expectedDecision": { "decision": "navigate" }
+      "expectedPolicy": {
+        "mode": "navigate",
+        "heuristicRules": []
+      },
+      "expectedDecision": {
+        "decision": "navigate"
+      }
     },
     {
       "name": "conservative-cross-resource-heuristic",
-      "policy": { "mode": "semantic-and-heuristic" },
+      "policy": {
+        "mode": "semantic-and-heuristic"
+      },
       "href": "notes.xhtml#note-legacy",
       "semantic": false,
-      "expectedPolicy": { "mode": "semantic-and-heuristic", "heuristicRules": [] },
-      "expectedDecision": { "decision": "emit", "classification": "heuristic" }
+      "expectedPolicy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": []
+      },
+      "expectedDecision": {
+        "decision": "emit",
+        "classification": "heuristic"
+      }
     },
     {
       "name": "simple-same-resource-fragment-is-not-a-heuristic-note",
-      "policy": { "mode": "semantic-and-heuristic" },
+      "policy": {
+        "mode": "semantic-and-heuristic"
+      },
       "href": "reading.xhtml#note-legacy",
       "semantic": false,
-      "expectedPolicy": { "mode": "semantic-and-heuristic", "heuristicRules": [] },
-      "expectedDecision": { "decision": "navigate" }
+      "expectedPolicy": {
+        "mode": "semantic-and-heuristic",
+        "heuristicRules": []
+      },
+      "expectedDecision": {
+        "decision": "navigate"
+      }
     },
     {
       "name": "consumer-declarative-rule",
@@ -80,8 +113,14 @@
       "policy": {
         "mode": "semantic-and-heuristic",
         "heuristicRules": [
-          { "id": "duplicate", "fragmentPrefix": "fn-" },
-          { "id": "duplicate", "resourceSuffix": "notes.xhtml" }
+          {
+            "id": "duplicate",
+            "fragmentPrefix": "fn-"
+          },
+          {
+            "id": "duplicate",
+            "resourceSuffix": "notes.xhtml"
+          }
         ]
       },
       "href": "notes.xhtml#fn-1",
@@ -92,7 +131,12 @@
       "name": "raw-pattern-field-is-invalid",
       "policy": {
         "mode": "semantic-and-heuristic",
-        "heuristicRules": [{ "id": "unsafe", "pattern": ".*note.*" }]
+        "heuristicRules": [
+          {
+            "id": "unsafe",
+            "pattern": ".*note.*"
+          }
+        ]
       },
       "href": "reading.xhtml#note",
       "semantic": false,
@@ -151,18 +195,26 @@
     },
     {
       "name": "supported-external-can-be-blocked",
-      "policy": { "externalLinks": "block" },
+      "policy": {
+        "externalLinks": "block"
+      },
       "href": "https://example.com/path",
       "expectedPolicy": {
         "allowedExternalSchemes": ["http", "https"],
         "externalLinks": "block",
         "unsupportedSchemes": "block"
       },
-      "expectedDecision": { "kind": "external", "disposition": "blocked", "scheme": "https" }
+      "expectedDecision": {
+        "kind": "external",
+        "disposition": "blocked",
+        "scheme": "https"
+      }
     },
     {
       "name": "unsupported-custom-scheme-can-be-intercepted",
-      "policy": { "unsupportedSchemes": "intercept" },
+      "policy": {
+        "unsupportedSchemes": "intercept"
+      },
       "href": "reader-action:open?id=1",
       "expectedPolicy": {
         "allowedExternalSchemes": ["http", "https"],
@@ -177,13 +229,17 @@
     },
     {
       "name": "duplicate-scheme-is-invalid",
-      "policy": { "allowedExternalSchemes": ["HTTPS", "https"] },
+      "policy": {
+        "allowedExternalSchemes": ["HTTPS", "https"]
+      },
       "href": "https://example.com",
       "expectedError": true
     },
     {
       "name": "scheme-with-colon-is-invalid",
-      "policy": { "allowedExternalSchemes": ["https:"] },
+      "policy": {
+        "allowedExternalSchemes": ["https:"]
+      },
       "href": "https://example.com",
       "expectedError": true
     }
@@ -242,6 +298,24 @@
       "fragment": "fn8",
       "document": "<p data-id=\"fn8\">Decoy.</p><p id=\"fn8\">Eighth.</p>",
       "expectedHtml": "<p id=\"fn8\">Eighth.</p>"
+    },
+    {
+      "name": "whole-resource-footnote-uses-body-only",
+      "fragment": "",
+      "document": "<html><head><title>Metadata</title></head><body dir=\"rtl\"><p><a href=\"chapter.xhtml#ref1\">1</a> A separate note.</p></body></html>",
+      "expectedHtml": "<p><a href=\"chapter.xhtml#ref1\">1</a> A separate note.</p>"
+    },
+    {
+      "name": "whole-resource-empty-body-is-empty",
+      "fragment": "",
+      "document": "<html><head><title>Metadata</title></head><BODY></BODY></html>",
+      "expectedHtml": ""
+    },
+    {
+      "name": "whole-resource-without-body-is-not-note-content",
+      "fragment": "",
+      "document": "<head><title>Metadata</title></head>",
+      "expectedHtml": ""
     }
   ]
 }

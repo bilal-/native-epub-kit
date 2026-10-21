@@ -315,3 +315,5 @@ The exact Readium pin and font CORS rationale remain documented in
 admission and native grouping are documented in
 [`font-config-plugin.md`](font-config-plugin.md) and
 [`native-font-registry.md`](native-font-registry.md).
+
+Typography rules also accept `borderTop: 'none'` to suppress a publisher's top-border decoration for a language, direction, or class. Consumers can combine it with `fontWeight` when replacing ruled quote emphasis. Other border values and raw CSS are rejected; the same closed property is validated and compiled on TypeScript, Swift, and Kotlin.

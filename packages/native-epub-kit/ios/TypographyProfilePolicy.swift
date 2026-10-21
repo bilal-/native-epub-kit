@@ -21,6 +21,7 @@ struct ReaderColorProfile: Equatable, Sendable {
 }
 
 struct TypographyRule: Equatable, Sendable {
+  let borderTop: String?
   let target: TypographyRuleTarget
   let color: String?
   let fontFamilies: [String]?
@@ -57,7 +58,7 @@ enum TypographyProfilePolicy {
   private static let profileKeys = Set(["colors", "defaultFontFamilies", "publisherStyles", "rules"])
   private static let colorKeys = Set(["background", "link", "text"])
   private static let ruleKeys = Set(
-    ["color", "direction", "fontFamilies", "fontWeight", "lineHeight", "target"]
+    ["borderTop", "color", "direction", "fontFamilies", "fontWeight", "lineHeight", "target"]
   )
   private static let targetKeys = Set(["kind", "value"])
   private static let genericFamilies = Set(
@@ -153,6 +154,9 @@ enum TypographyProfilePolicy {
       if let fontWeight = rule.fontWeight {
         declarations.append("font-weight: \(fontWeight) !important;")
       }
+      if rule.borderTop != nil {
+        declarations.append("border-top: none !important;")
+      }
       lines.append("\(selector(rule.target)) { \(declarations.joined(separator: " ")) }")
     }
     return lines.joined(separator: "\n")
@@ -214,10 +218,18 @@ enum TypographyProfilePolicy {
     } else {
       fontWeight = nil
     }
-    guard color != nil || fontFamilies != nil || direction != nil || lineHeight != nil || fontWeight != nil else {
+    let borderTop: String?
+    if let value = object["borderTop"] {
+      guard case let .string(raw) = value, raw == "none" else { throw ValidationError.invalid }
+      borderTop = raw
+    } else {
+      borderTop = nil
+    }
+    guard color != nil || fontFamilies != nil || direction != nil || lineHeight != nil || fontWeight != nil || borderTop != nil else {
       throw ValidationError.invalid
     }
     return TypographyRule(
+      borderTop: borderTop,
       target: target,
       color: color,
       fontFamilies: fontFamilies,

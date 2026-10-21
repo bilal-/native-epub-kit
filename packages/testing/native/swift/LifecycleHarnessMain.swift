@@ -1529,6 +1529,7 @@ private func typographyProfileJSON(_ profile: ResolvedTypographyProfile) -> Shar
     }
     if let direction = rule.direction { object["direction"] = .string(direction) }
     if let lineHeight = rule.lineHeight { object["lineHeight"] = .number(lineHeight) }
+    if let borderTop = rule.borderTop { object["borderTop"] = .string(borderTop) }
     if let fontWeight = rule.fontWeight {
       object["fontWeight"] = .integer(Int64(fontWeight))
     }

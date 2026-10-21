@@ -287,6 +287,8 @@ export interface ReaderColorProfile {
 
 /** One constrained, script-free typography rule compiled by the native adapters. */
 export interface TypographyRule {
+  /** Remove a publisher's top-border decoration without changing the text. */
+  borderTop?: 'none';
   color?: string;
   direction?: 'ltr' | 'rtl';
   fontFamilies?: string[];

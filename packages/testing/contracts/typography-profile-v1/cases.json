@@ -4,6 +4,81 @@
   "maximumFontFamilies": 8,
   "cases": [
     {
+      "name": "publisher-overline-replaced-by-weight",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [
+          {
+            "target": { "kind": "class", "value": "quote" },
+            "borderTop": "none",
+            "fontWeight": 700
+          }
+        ]
+      },
+      "expected": {
+        "status": "valid",
+        "profile": {
+          "publisherStyles": "hybrid",
+          "defaultFontFamilies": [],
+          "rules": [
+            {
+              "target": { "kind": "class", "value": "quote" },
+              "borderTop": "none",
+              "fontWeight": 700
+            }
+          ]
+        },
+        "stylesheet": ":root .quote.quote { font-weight: 700 !important; border-top: none !important; }"
+      }
+    },
+    {
+      "name": "border-suppression-alone",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [{ "target": { "kind": "class", "value": "quote" }, "borderTop": "none" }]
+      },
+      "expected": {
+        "status": "valid",
+        "profile": {
+          "publisherStyles": "hybrid",
+          "defaultFontFamilies": [],
+          "rules": [{ "target": { "kind": "class", "value": "quote" }, "borderTop": "none" }]
+        },
+        "stylesheet": ":root .quote.quote { border-top: none !important; }"
+      }
+    },
+    {
+      "name": "unsupported-border-style",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [{ "target": { "kind": "class", "value": "quote" }, "borderTop": "solid" }]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "border-injection",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [
+          { "target": { "kind": "class", "value": "quote" }, "borderTop": "none; color: red" }
+        ]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
+      "name": "border-null",
+      "availableFontFamilies": [],
+      "profile": {
+        "publisherStyles": "hybrid",
+        "rules": [{ "target": { "kind": "class", "value": "quote" }, "borderTop": null }]
+      },
+      "expected": { "status": "invalid", "profile": null, "stylesheet": "" }
+    },
+    {
       "name": "absent-profile",
       "availableFontFamilies": [],
       "profile": null,

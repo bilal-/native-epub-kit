@@ -393,7 +393,12 @@ const EpubReaderView = forwardRef<EpubReaderViewRef, EpubReaderViewProps>(functi
     if (!native || granularity === null || key === null) return null;
 
     const existing = locationEnhancementRef.current;
-    if (existing && identitiesMatch(existing, identity) && existing.granularityKey === key) {
+    if (
+      existing &&
+      existing.status !== 'failed' &&
+      identitiesMatch(existing, identity) &&
+      existing.granularityKey === key
+    ) {
       return existing;
     }
     if (existing) {

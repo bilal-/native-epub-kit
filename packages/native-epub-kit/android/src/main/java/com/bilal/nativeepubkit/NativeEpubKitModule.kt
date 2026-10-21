@@ -40,7 +40,7 @@ class NativeEpubKitModule : Module() {
         view.setSourceJson(sourceJson)
       }
 
-      AsyncFunction("getCurrentLocation") { view: EpubReaderView ->
+      AsyncFunction("getCurrentLocation") Coroutine { view: EpubReaderView ->
         view.getCurrentLocationCommand()
       }
 

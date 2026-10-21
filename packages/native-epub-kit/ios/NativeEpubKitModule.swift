@@ -47,10 +47,8 @@ public final class NativeEpubKitModule: Module {
         view.setSourceJson(sourceJson)
       }
 
-      AsyncFunction("getCurrentLocation") { (view: EpubReaderView) in
-        MainActor.assumeIsolated {
-          view.getCurrentLocationCommand()
-        }
+      AsyncFunction("getCurrentLocation") { (view: EpubReaderView) async in
+        await view.getCurrentLocationCommand()
       }
 
       AsyncFunction("getCurrentSelection") { (view: EpubReaderView) in

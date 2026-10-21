@@ -169,3 +169,7 @@ HTML, non-truncation, 350 ms location stability, consumer navigation, ordinary
 navigation, scheme policy, and that no external app is launched. The final
 LIB-050 evidence and exact commands are recorded in the app program's
 `docs/reader-modernization/evidence` directory.
+
+## Whole-resource footnotes
+
+A consumer heuristic rule may identify a footnote stored in its own HTML resource without a fragment identifier. Native extraction reads the bounded resource and returns only the document body; head metadata is excluded. Links without a matching semantic or consumer heuristic classification continue to navigate normally.

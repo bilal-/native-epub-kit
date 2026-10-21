@@ -134,6 +134,7 @@ class TypographyProfileTest {
     .also { json -> direction?.let { json.put("direction", it) } }
     .also { json -> lineHeight?.let { json.put("lineHeight", it) } }
     .also { json -> fontWeight?.let { json.put("fontWeight", it) } }
+    .also { json -> borderTop?.let { json.put("borderTop", it) } }
 
   private fun JSONArray.stringSet(): Set<String> =
     (0 until length()).map(::getString).toSet()
